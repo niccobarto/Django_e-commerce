@@ -1,0 +1,22 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>{{ product.name }}</title>
+    <link rel="stylesheet" href="{% static "css/bootstrap.min.css" %}">
+</head>
+<body>
+
+  <h1>{{ product.name }}</h1>
+  <p>Price: €{{ product.price }}</p>
+
+  {% if product.front_image %}
+    <img src="{{ product.front_image.url }}" alt="{{ product.name }}" style="max-width:300px;">
+  {% endif %}
+
+  <p>Description: {{ product.description }}</p>
+
+  <a href="/static">Back to home page</a>
+
+</body>
+</html>
