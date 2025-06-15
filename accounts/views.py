@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-
+from django.contrib.auth.password_validation import password_validators_help_texts
 from accounts.forms import CustomUserCreationForm
 
 
@@ -40,4 +40,5 @@ def register_user(request):
             return redirect("register")
     else:
         form=CustomUserCreationForm()
-        return render(request,"accounts/register.html",{"form":form})
+        help_texts=password_validators_help_texts()
+        return render(request,"accounts/register.html",{"form":form,"help_texts":help_texts})
