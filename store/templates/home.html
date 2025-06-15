@@ -1,34 +1,7 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta charset="UTF-8">
-    <title>Django Ecommerce</title>
-    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-</head>
-<body>
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">E-Commerce</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="#">Prodotti</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Carrello</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Login</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
-
+{% extends 'base.html' %}
+{% block content %}
 <!-- Content -->
-
-
-<section style="background-color: #eee;">
+<section class="bg-dark">
 
     <div class="text-center container py-5">
         <h4 class="mt-4 mb-5"><strong>AVAILABLE PRODUCTS</strong></h4>
@@ -53,9 +26,5 @@
         </div>
 
     </div>
-
 </section>
-
-<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
-</body>
-</html>
+{% endblock %}
