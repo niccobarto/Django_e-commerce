@@ -31,6 +31,7 @@ class Product(models.Model):
     price=models.DecimalField(default=0,decimal_places=2,max_digits=6)
     front_image=models.ImageField(upload_to="uploads/product")
     description=models.CharField(max_length=500, default="", blank=True, null=True)
+    quantity=models.PositiveIntegerField(default=0)
     def __str__(self):
         return self.name
 
@@ -42,4 +43,3 @@ class Order(models.Model):
     address=models.CharField(max_length=100)
     datetime=models.DateTimeField(default=datetime.datetime.today)
     status=models.CharField(choices=ShipmentStatus.choices())
-

@@ -2,10 +2,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from pyexpat.errors import messages
 from django.contrib import messages
-
 from store.models import Product
 from accounts.models import CustomUser
 from .models import CartItem
+from store.utils import check_product_availability
+from django.contrib.auth.password_validation import password_validators_help_texts
 # Create your views here.
 
 @login_required(login_url='login')
@@ -24,19 +25,26 @@ def add_cart(request,product_id):
     customer=CustomUser.objects.get(username=request.user.username)
     product=get_object_or_404(Product,id=product_id)
 
-    #We verify is already exist a CartItem with a particular customer and product. If exist we only
+    #We verify if already exist a CartItem with a particular customer and product. If exist we only
     #increment the quantity, otherwise we create a new CartItem
-    cart_item,created=CartItem.objects.get_or_create(customer=customer,
-                                                     product=product,
-                                                     defaults={'quantity':1}
-                                                     )
-    if not created:
-        cart_item.quantity+=1
-        cart_item.save()
+    item_exists = CartItem.objects.filter(customer=customer, product=product).exists()
+    if item_exists:
+        cart_item = CartItem.objects.get(customer=customer, product=product)
+        if check_product_availability(product.pk,cart_item.quantity+1):
+            cart_item.quantity+=1
+            cart_item.save()
+        else:
+            messages.warning(request,f"There are no more then {product.quantity} products available of {product.name}")
+    else:
+        if check_product_availability(product_id,1):
+            CartItem.objects.create(customer=customer,product=product,quantity=1)
+            messages.success(request, f"{product.name} added to cart")
+        else:
+            messages.error(request,f"There are no more then {product.quantity} products available of {product.name}")
     #Redirect to the page where the button "add to cart" was pressed
-    messages.success(request, f"{product.name} added to cart")
     return redirect(request.META.get('HTTP_REFERER', 'home'))
 
+@login_required(login_url='login')
 def remove_all_cart(request,product_id):
     customer=CustomUser.objects.get(username=request.user.username)
     product=get_object_or_404(Product, id=product_id)
@@ -66,14 +74,3 @@ def decrease_quantity(request, product_id):
     return redirect('view_cart')
 
 
-@login_required(login_url='login')
-def increase_quantity(request,product_id):
-    customer = CustomUser.objects.get(username=request.user.username)
-    product = get_object_or_404(Product, pk=product_id)
-    try:
-        cart_item = CartItem.objects.get(customer=customer, product=product)
-        cart_item.quantity += 1
-        cart_item.save()
-    except CartItem.DoesNotExist:
-        messages.warning(request, f"{product.name} wasn't found in cart.")
-    return redirect('view_cart')

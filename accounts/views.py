@@ -32,7 +32,6 @@ def register_user(request):
         form=CustomUserCreationForm(request.POST)
         if form.is_valid():
             form.save()
-
             messages.success(request, "User created successfully")
             return redirect("home")
         else:

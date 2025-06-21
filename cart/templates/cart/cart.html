@@ -4,7 +4,7 @@
         {% for item in items %}
             <li>{{ item.product }}: {{ item.quantity }}
                 <a href="{% url 'decrease_quantity' item.product.pk %}" >-</a>
-                <a href="{% url 'increase_quantity' item.product.pk %}" >+</a>
+                <a href="{% url 'add_cart' item.product.pk %}" >+</a>
                 <a href="{% url 'remove_all_cart' item.product.pk %}">Remove from cart</a>
             </li>
         {% endfor %}
