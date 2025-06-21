@@ -40,4 +40,4 @@ def register_user(request):
     else:
         form=CustomUserCreationForm()
         help_texts=password_validators_help_texts()
-        return render(request,"accounts/register.html",{"form":form,"help_texts":help_texts})
+        return render(request,"accounts/register.html",{"creation_form":form,"help_texts":help_texts})
