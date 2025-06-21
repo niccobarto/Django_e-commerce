@@ -34,13 +34,13 @@ def add_cart(request,product_id):
             cart_item.quantity+=1
             cart_item.save()
         else:
-            messages.warning(request,f"There are no more then {product.quantity} products available of {product.name}")
+            messages.warning(request,f"There are no more then {product.quantity} elements available of {product.name}")
     else:
         if check_product_availability(product_id,1):
             CartItem.objects.create(customer=customer,product=product,quantity=1)
             messages.success(request, f"{product.name} added to cart")
         else:
-            messages.error(request,f"There are no more then {product.quantity} products available of {product.name}")
+            messages.error(request,f"There are no more then {product.quantity} elements available of {product.name}")
     #Redirect to the page where the button "add to cart" was pressed
     return redirect(request.META.get('HTTP_REFERER', 'home'))
 
