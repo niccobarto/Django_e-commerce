@@ -1,36 +1,52 @@
 {% extends 'store/base.html' %}
+{% load static %}
 {% block content %}
     <div class="container py-5">
-        <p>
-            <a class="btn btn-link" data-bs-toggle="collapse" href="#newAddressForm" role="button" aria-expanded="false">
-                + Add address
+    <h2>Choose shipment address</h2>
+    <br/>
+    <br/>
+        <div class="d-flex justify-content-center  mb-3" style="width: 100%">
+            <a class="btn btn-outline-warning d-flex justify-content-center align-items-center gap-2"
+               data-bs-toggle="collapse"
+               href="#newAddressForm"
+               role="button"
+               aria-expanded="false"
+               aria-controls="newAddressForm"
+               id="toggleAddressBtn"
+               style="max-width: 700px;width: 100%">
+                Add address
+                <span class="bi bi-chevron-down" id="addressIcon"></span>
             </a>
-        </p>
+        </div>
+
+
         <!-- Add new address form -->
         <div class="collapse mb-5" id="newAddressForm">
-    <div class="card bg-secondary text-white p-4 mx-auto" style="max-width: 700px;">
-        <form method="post">
-            {% csrf_token %}
-            {% for field in add_address_form %}
-                <div class="mb-3">
-                    <label class="form-label">{{ field.label_tag }}</label>
-                    {{ field }}
-                    {% if field.errors %}
-                        <div class="text-danger small mt-1">{{ field.errors }}</div>
-                    {% endif %}
-                </div>
-            {% endfor %}
-            <button type="submit" name="add_address_submit" class="btn btn-dark w-100 mt-2">
-                Save new address
-            </button>
-        </form>
-    </div>
-</div>
+            <div class="card bg-secondary text-white p-4 mx-auto" style="max-width: 700px;">
+                <form method="post">
+                    {% csrf_token %}
+                    <h3 class="text-center">Create a new address</h3>
+                    {% for field in add_address_form %}
+                        <div class="mb-3">
+                            <label class="form-label">{{ field.label_tag }}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                                <div class="text-danger small mt-1">{{ field.errors }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <button type="submit" name="add_address_submit" class="btn btn-dark w-100 mt-2">
+                        Save new address
+                    </button>
+                </form>
+            </div>
+        </div>
+        <br/>
         <!-- Choose address and go checkout form -->
         <form method="post">
             {% csrf_token %}
             <div class="mb-4">
-                <label for="address_id" class="form-label">Choose address:</label>
+                <label for="address_id" class="form-label">Your addresses</label>
                 <select name="address_id" id="address_id" class="form-select" required>
                     {% for address in addresses %}
                         <option value="{{ address.id }}">
@@ -45,6 +61,6 @@
                 Next checkout step
             </button>
         </form>
-
     </div>
+    <script src="{% static 'js/shipment_address.js' %}"></script>
 {% endblock %}

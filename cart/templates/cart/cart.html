@@ -1,19 +1,43 @@
 {% extends "store/base.html" %}
 {% block content %}
-    <ul>
-        {% for item in items %}
-            <li>{{ item.product }}: {{ item.quantity }}
-                <a href="{% url 'decrease_quantity' item.product.pk %}" >-</a>
-                <a href="{% url 'add_cart' item.product.pk %}" >+</a>
-                <a href="{% url 'remove_all_cart' item.product.pk %}">Remove from cart</a>
-            </li>
-        {% endfor %}
-    </ul>
-    <div>
-        Total amount: {{ total_price }} €
+<div class="container py-4 d-flex justify-content-center">
+    <div style="max-width: 700px; width: 100%;">
+        <h2 class="mb-4">Your Cart</h2>
+
+        {% if items %}
+            <ul class="list-group mb-4">
+                {% for item in items %}
+                    <li class="list-group-item">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <img src="{{ item.product.front_image.url }}" alt="{{ item.product.name }}"
+                                     class="img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;">
+                            </div>
+                            <div class="col">
+                                <strong>{{ item.product.name }}</strong><br>
+                                Quantity: <strong>{{ item.quantity }}</strong> |
+                                Price: <strong>{{ item.product.price }}€</strong>
+                            </div>
+                            <div class="col-12 col-md-auto mt-3 mt-md-0">
+                                <div class="btn-group w-100" role="group">
+                                    <a href="{% url 'decrease_quantity' item.product.pk %}" class="btn btn-outline-dark">−</a>
+                                    <a href="{% url 'add_cart' item.product.pk %}" class="btn btn-outline-dark">+</a>
+                                    <a href="{% url 'remove_all_cart' item.product.pk %}" class="btn btn-outline-danger">Remove</a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+            <div class="mb-3">
+                <p><strong>Total amount:</strong> {{ total_price }} €</p>
+                <p><strong>Total products:</strong> {{ total_items }}</p>
+            </div>
+            <a href="{% url 'shipment_address' %}" class="btn btn-primary w-100">Proceed to Checkout</a>
+
+        {% else %}
+            <div class="alert alert-info">Your cart is currently empty.</div>
+        {% endif %}
     </div>
-    <div>
-        Total products: {{ total_items }}
-    </div>
-    <a href="{% url 'shipment_address' %}">Checkout</a>
+</div>
 {% endblock %}
