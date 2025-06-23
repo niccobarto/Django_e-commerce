@@ -28,6 +28,8 @@ class Order(models.Model):
     total_price=models.DecimalField(max_digits=10, decimal_places=2)
     datetime = models.DateTimeField(default=datetime.datetime.today)
     status = models.CharField(choices=SHIPMENT_STATUS, default="PENDING")
+    shipment_first_name = models.CharField(max_length=100)
+    shipment_last_name = models.CharField(max_length=100)
     shipment_city = models.CharField(max_length=100)
     shipment_country = CountryField()
     shipment_postal_code = models.CharField(max_length=10)
@@ -43,7 +45,8 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     order=models.ForeignKey(Order, on_delete=CASCADE)
-    product = models.ForeignKey(Product, on_delete=CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL,null=True,blank=True)
+    product_name=models.CharField(max_length=50)
     quantity = models.PositiveIntegerField(default=1)
     price = models.DecimalField(max_digits=8, decimal_places=2)
 

@@ -2,75 +2,169 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from pyexpat.errors import messages
 from django.contrib import messages
+from accounts.forms import UserAddressForm
 from store.models import Product
-from accounts.models import CustomUser
-from .models import CartItem
+from accounts.models import CustomUser,UserAddress
+from .models import CartItem,Order,OrderItem
 from store.utils import check_product_availability
+from .utils import cart_total_items,cart_total_price,quantity_price
 from django.contrib.auth.password_validation import password_validators_help_texts
 # Create your views here.
 
 @login_required(login_url='login')
 def view_cart(request):
-    customer=CustomUser.objects.get(username=request.user.username)
+    customer=request.user
     items=CartItem.objects.filter(customer=customer)
-    total_item=0
-    total_price=0
+    cleaned_cart=[]
     for item in items:
-        total_item+=item.quantity
-        total_price+=(item.product.price*item.quantity)
-    return render(request,"cart/cart.html",{'total_item':total_item,'total_price':total_price,'items':items})
+        if not check_product_availability(item.product.id,item.quantity):
+            to_remove=item.quantity-item.product.quantity
+            if item.quantity-to_remove <= 0:
+                item.delete()
+                messages.warning(request,f"{item.product.name} not available anymore")
+            else:
+                item.quantity-=to_remove
+                item.save()
+                cleaned_cart.append(item)
+                messages.warning(request,f"Removed {to_remove} elements of {item.product.name} not available anymore")
+        else:
+            cleaned_cart.append(item)
+    return render(request,"cart/cart.html",{'total_items':cart_total_items(cleaned_cart),'total_price':cart_total_price(cleaned_cart),'items':cleaned_cart})
 
 @login_required(login_url='login')
 def add_cart(request,product_id):
-    customer=CustomUser.objects.get(username=request.user.username)
-    product=get_object_or_404(Product,id=product_id)
-
+    customer = request.user
+    product_selected=get_object_or_404(Product, id=product_id)
     #We verify if already exist a CartItem with a particular customer and product. If exist we only
     #increment the quantity, otherwise we create a new CartItem
-    item_exists = CartItem.objects.filter(customer=customer, product=product).exists()
+    item_exists = CartItem.objects.filter(customer=customer, product=product_selected).exists()
     if item_exists:
-        cart_item = CartItem.objects.get(customer=customer, product=product)
-        if check_product_availability(product.pk,cart_item.quantity+1):
+        cart_item = CartItem.objects.get(customer=customer, product=product_selected)
+        if check_product_availability(product_selected.pk, cart_item.quantity + 1):
             cart_item.quantity+=1
             cart_item.save()
         else:
-            messages.warning(request,f"There are no more then {product.quantity} elements available of {product.name}")
+            messages.warning(request,f"There are no more then {product_selected.quantity} elements available of {product_selected.name}")
     else:
         if check_product_availability(product_id,1):
-            CartItem.objects.create(customer=customer,product=product,quantity=1)
-            messages.success(request, f"{product.name} added to cart")
+            CartItem.objects.create(customer=customer, product=product_selected, quantity=1)
+            messages.success(request, f"{product_selected.name} added to cart")
         else:
-            messages.error(request,f"There are no more then {product.quantity} elements available of {product.name}")
+            messages.error(request,f"There are no more then {product_selected.quantity} elements available of {product_selected.name}")
     #Redirect to the page where the button "add to cart" was pressed
     return redirect(request.META.get('HTTP_REFERER', 'home'))
 
 @login_required(login_url='login')
 def remove_all_cart(request,product_id):
-    customer=CustomUser.objects.get(username=request.user.username)
-    product=get_object_or_404(Product, id=product_id)
+    customer = request.user
+    product_selected=get_object_or_404(Product, id=product_id)
     try:
-        cart_item=CartItem.objects.get(customer=customer,product=product)
+        cart_item=CartItem.objects.get(customer=customer, product=product_selected)
         cart_item.delete()
-        messages.success(request, f"{product.name} removed from cart")
+        messages.success(request, f"{product_selected.name} removed from cart")
     except CartItem.DoesNotExist:
-        messages.error(request, f"{product.name} not found in cart")
+        messages.error(request, f"{product_selected.name} not found in cart")
     return redirect('view_cart')
 
 
 @login_required(login_url='login')
 def decrease_quantity(request, product_id):
-    customer = CustomUser.objects.get(username=request.user.username)
-    product = get_object_or_404(Product, pk=product_id)
+    customer = request.user
+    product_selected = get_object_or_404(Product, pk=product_id)
     try:
-        cart_item = CartItem.objects.get(customer=customer, product=product)
+        cart_item = CartItem.objects.get(customer=customer, product=product_selected)
         if cart_item.quantity > 1:
             cart_item.quantity -= 1
             cart_item.save()
         else:
             cart_item.delete()
-            messages.success(request, f"{product.name} removed from cart")
+            messages.success(request, f"{product_selected.name} removed from cart")
     except CartItem.DoesNotExist:
-        messages.warning(request, f"{product.name} wasn't found in cart.")
+        messages.warning(request, f"{product_selected.name} wasn't found in cart.")
     return redirect('view_cart')
 
+@login_required
+def shipment_address(request):
+    customer = request.user
+    cart_items = CartItem.objects.filter(customer=customer)
+    if not cart_items.exists():
+        messages.error(request, "Your cart is empty.")
+        return redirect("view_cart")
+    address_form = UserAddressForm()
+    addresses = UserAddress.objects.filter(customer=customer)
 
+    if request.method == "POST":
+        if 'checkout_submit' in request.POST:
+            address_id = request.POST.get("address_id")
+            if address_id:
+                request.session["checkout_address_id"] = address_id
+                request.session["allow_checkout"] = True
+                return redirect("view_checkout")
+            else:
+                messages.error(request, "Please select an address.")
+
+        elif 'add_address_submit' in request.POST:
+            address_form = UserAddressForm(request.POST)
+            if address_form.is_valid():
+                new_address = address_form.save(commit=False)
+                new_address.customer = customer
+                new_address.save()
+                messages.success(request, "Address added successfully.")
+                return redirect("shipment_address")
+            else:
+                messages.error(request, "Please correct the errors below.")
+
+    return render(request, "cart/shipment_address.html", {
+        "add_address_form": address_form,
+        "addresses": addresses
+    })
+
+@login_required(login_url='login')
+def view_checkout(request):
+    customer=request.user
+    cart_items = CartItem.objects.filter(customer=customer)
+    if not cart_items.exists():
+        messages.error(request, "Your cart is empty.")
+        return redirect("view_cart")
+
+    if not request.session.get("allow_checkout"):
+        messages.warning(request, "Accedi al checkout solo passando dal carrello.")
+        return redirect("view_cart")
+
+    address=UserAddress.objects.get(id=request.session['checkout_address_id'],customer=customer)
+    return render(request,'cart/checkout.html',{'address':address,'cart_items':cart_items,'total_price':cart_total_price(cart_items)})
+
+@login_required(login_url='login')
+def confirm_order(request):
+    customer=request.user
+    cart_items = CartItem.objects.filter(customer=customer)
+    if not cart_items.exists():
+        messages.error(request, "Your cart is empty.")
+        return redirect("view_cart")
+    address=UserAddress.objects.get(id=request.session['checkout_address_id'],customer=customer)
+    order= Order.objects.create(
+        customer=customer,
+        total_price=cart_total_price(cart_items),
+        shipment_first_name = address.first_name,
+        shipment_last_name=address.last_name,
+        shipment_city=address.city,
+        shipment_country=address.country,
+        shipment_postal_code=address.postal_code,
+        shipment_street_address=address.street_address,
+    )
+    for item in cart_items:
+        order_item=OrderItem.objects.create(
+            order=order,
+            product=item.product,
+            product_name=item.product.name,
+            quantity=item.quantity,
+            price=quantity_price(item.product.price,item.quantity)
+        )
+        item.product.quantity -=  item.quantity
+        item.product.save()
+    cart_items.delete()
+
+    request.session.pop("checkout_address_id", None)
+    request.session.pop("allow_checkout", None)
+
+    return redirect('home')

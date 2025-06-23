@@ -9,5 +9,14 @@ class CustomUserCreationForm(UserCreationForm):
         fields=["username","email","password1","password2","phone"]
 
 class UserAddressForm(forms.ModelForm):
-    model=UserAddress
-    fields=["username","city","country","postal_code","street_address",]
+    class Meta:
+        model=UserAddress
+        fields=["first_name","last_name","city","country","postal_code","street_address",]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'form-control',  # stile Bootstrap
+                'placeholder': field.label,  # segnaposto dinamico
+            })

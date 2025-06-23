@@ -1,0 +1,43 @@
+{% extends "store/base.html" %}
+{% block content %}
+    <div class="container py-5">
+        <h2 class="mb-4">Checkout</h2>
+        <br/>
+        <br/>
+        <!-- Sezione indirizzi -->
+        <div class="mb-4">
+            <h3>Shipment address</h3>
+            <p>{{address.str}}</p>
+        </div>
+        <br/>
+        <br/>
+        <h4>Order summary</h4>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in cart_items %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>€{{ item.product.price }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="text-end">
+            <h5 class="fw-bold">Total: €{{ total_price }}</h5>
+        </div>
+
+        <div class="mt-4 text-end">
+            <a type="button" href="{% url 'confirm_order' %}" class="btn btn-success">Confirm order</a>
+        </div>
+
+    </div>
+{% endblock %}

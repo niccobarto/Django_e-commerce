@@ -10,9 +10,10 @@
         {% endfor %}
     </ul>
     <div>
-        Total amount:{{ total_price }} €
+        Total amount: {{ total_price }} €
     </div>
     <div>
-        Total products:{{ total_amount }}
+        Total products: {{ total_items }}
     </div>
+    <a href="{% url 'shipment_address' %}">Checkout</a>
 {% endblock %}
