@@ -97,3 +97,13 @@ def confirm_order(request):
     request.session.pop("allow_checkout", None)
 
     return redirect('home')
+
+@login_required(login_url='login')
+def orders_history(request):
+    customer = request.user
+    orders = Order.objects.filter(customer=customer)
+    history=[]
+    for order in orders:
+        order_items=OrderItem.objects.filter(order=order)
+        history.append((order_items,order))
+    return render(request,'order/history.html',{'history':history})

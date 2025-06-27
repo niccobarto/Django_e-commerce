@@ -7,7 +7,7 @@ from django_countries.fields import CountryField
 
 SHIPMENT_STATUS=[
     ("PENDING","PENDING"),
-    ("IN_TRANSIT","IN_TRANSIT"),
+    ("IN_TRANSIT","IN TRANSIT"),
     ("DELIVERED","DELIVERED"),
     ("LOST","LOST"),
 ]
@@ -31,6 +31,13 @@ class Order(models.Model):
     def __str__(self):
         return f"{self.user} - {self.total_price} - {self.shipment_city}"
 
+    @property
+    def address_str(self):
+        return f"{self.full_name} - {self.shipment_city} - {self.shipment_country} - {self.shipment_postal_code} - {self.shipment_street_address}"
+
+    @property
+    def full_name(self):
+        return f"{self.shipment_first_name} {self.shipment_last_name}"
     @property
     def user(self):
         return self.customer.username

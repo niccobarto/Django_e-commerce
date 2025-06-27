@@ -14,12 +14,16 @@ def login_user(request):
         if user is not None:
             login(request,user)
             messages.success(request, "Logged in successfully")
+            next_url = request.POST.get("next") or request.GET.get("next")
+            if next_url:
+                return redirect(next_url)
             return redirect("home")
         else:
             messages.warning(request, "Login failed")
             return redirect("login")
     else:
-        return render(request, "accounts/login.html")
+        next_url = request.GET.get("next","")
+        return render(request, "accounts/login.html",{"next":next_url})
 
 
 def logout_user(request):

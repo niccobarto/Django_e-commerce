@@ -8,6 +8,7 @@
             <br/>
             <form method="POST" action="{% url 'login' %}">
                 {% csrf_token %}
+                <input type="hidden" name="next" value="{{ next }}">
                 <div class="form-group">
                     <label for="inputUsername">Username</label>
                     <input type="text" class="form-control" id="inputUsername" placeholder="Enter username" name="username">
