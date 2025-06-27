@@ -1,5 +1,8 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import permission_required
+from unicodedata import category
+
 from .models import Product, Category
 from django.views.generic import ListView
 # Create your views here.
@@ -10,7 +13,7 @@ class HomeView(ListView):
     context_object_name = 'products'  # variabile usata nel template ({{ products }})
 
     def get_queryset(self):
-        queryset = Product.objects.all()
+        queryset = Product.objects.filter(is_active=True)
 
         category_id=self.request.GET.get('category')
         min_price=self.request.GET.get('min_price')
@@ -33,7 +36,17 @@ class HomeView(ListView):
         context=super().get_context_data(**kwargs)
         context['categories'] = Category.objects.all()
         return context
+
 def product_detail(request,product_id):
     product=Product.objects.get(pk=product_id)
     return render(request, 'store/product_detail.html', {"product":product})
+
+
+@permission_required('store_addproduct', raise_exception=True)
+@permission_required('store_changeproduct', raise_exception=True)
+@permission_required('store_deleteproduct', raise_exception=True)
+def manage_products(request):
+    products = Product.objects.all()
+    categories = Category.objects.all()
+    return render(request, 'store/manage_products.html', {'products':products, 'categories':categories})
 

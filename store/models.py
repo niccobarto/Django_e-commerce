@@ -20,6 +20,7 @@ class Product(models.Model):
     front_image=models.ImageField(upload_to="uploads/product")
     description=models.CharField(max_length=500, default="", blank=True, null=True)
     quantity=models.PositiveIntegerField(default=0)
+    is_active=models.BooleanField(default=True)
     def __str__(self):
         return self.name
 
