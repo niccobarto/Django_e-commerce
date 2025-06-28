@@ -1,0 +1,32 @@
+    <!--Manager Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg fixed-top">
+    <div class="container fluid">
+         <a class="navbar-brand d-flex align-items-center gap-2 m-0" href="{% url 'manager_home' %}">
+            <span>E-Commerce</span>
+            <span class="text-white">|</span>
+            <span class="text-warning fw-semibold">Manager vision</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                {% for group in user.groups.all %}
+                    {% if group.name == "Manager" %}
+                        <li class="nav-item mx-2"><a class="nav-link" href="{% url 'manage_products' %}">Products</a></li>
+                        <li class="nav-item mx-2"><a class="nav-link" href="#">Categories</a></li>
+                        <li class="nav-item mx-2"><a class="nav-link" href="#">Users</a></li>
+                        <li class="nav-item mx-2"><a class="nav-link" href="#">Orders</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if user.is_authenticated %}
+                    <li class="nav-item mx-2"><a class="nav-link border bg-primary border-primary rounded px-2" href="{% url 'logout' %}">Logout</a></li>
+                {% else %}
+                    <li class="nav-item mx-2"><a class="nav-link border bg-primary border-primary rounded px-2" href="{% url 'login' %}">Login</a></li>
+                    <li class="nav-item mx-2"><a class="nav-link border bg-primary border-primary rounded px-2" href="{% url 'register' %}">Register</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
