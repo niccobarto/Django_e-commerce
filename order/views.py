@@ -9,9 +9,12 @@ from accounts.models import UserAddress
 from .models import Order,OrderItem
 from cart.models import CartItem
 from cart.utils import cart_total_price,quantity_price
+from django.contrib.auth.decorators import permission_required
 
 # Create your views here.
 
+@permission_required('accounts.view_useraddress', raise_exception=True)
+@permission_required('accounts.add_useraddress', raise_exception=True)
 @login_required
 def shipment_address(request):
     customer = request.user
@@ -63,6 +66,7 @@ def view_checkout(request):
     address=UserAddress.objects.get(id=request.session['checkout_address_id'],customer=customer)
     return render(request, 'order/checkout.html', {'address':address, 'cart_items':cart_items, 'total_price':cart_total_price(cart_items)})
 
+@permission_required('order.add_order',raise_exception=True)
 @login_required(login_url='login')
 def confirm_order(request):
     customer=request.user
@@ -70,6 +74,11 @@ def confirm_order(request):
     if not cart_items.exists():
         messages.error(request, "Your cart is empty.")
         return redirect("view_cart")
+
+    if not request.session.get("allow_checkout"):
+        messages.warning(request, "Accedi al checkout solo passando dal carrello.")
+        return redirect("view_cart")
+
     address=UserAddress.objects.get(id=request.session['checkout_address_id'],customer=customer)
     order= Order.objects.create(
         customer=customer,
@@ -85,7 +94,6 @@ def confirm_order(request):
         order_item=OrderItem.objects.create(
             order=order,
             product=item.product,
-            product_name=item.product.name,
             quantity=item.quantity,
             price=quantity_price(item.product.price,item.quantity)
         )

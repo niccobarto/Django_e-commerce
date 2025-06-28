@@ -1,4 +1,5 @@
 from django.shortcuts import render,redirect
+from django.contrib.auth.models import Group
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.password_validation import password_validators_help_texts
@@ -35,8 +36,11 @@ def register_user(request):
     if request.method=="POST":
         form=CustomUserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
+            user=form.save()
+            customer_group=Group.objects.get(name="Customer")
+            user.groups.add(customer_group)
             messages.success(request, "User created successfully")
+            login(request,user)
             return redirect("home")
         else:
             messages.error(request, "Form invalid")

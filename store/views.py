@@ -1,8 +1,5 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import permission_required
-from unicodedata import category
-
 from .models import Product, Category
 from django.views.generic import ListView
 # Create your views here.
@@ -40,13 +37,3 @@ class HomeView(ListView):
 def product_detail(request,product_id):
     product=Product.objects.get(pk=product_id)
     return render(request, 'store/product_detail.html', {"product":product})
-
-
-@permission_required('store_addproduct', raise_exception=True)
-@permission_required('store_changeproduct', raise_exception=True)
-@permission_required('store_deleteproduct', raise_exception=True)
-def manage_products(request):
-    products = Product.objects.all()
-    categories = Category.objects.all()
-    return render(request, 'store/manage_products.html', {'products':products, 'categories':categories})
-

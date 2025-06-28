@@ -7,6 +7,15 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
+                {% for group in user.groups.all %}
+                    {% if group.name == "Manager" %}
+                        <li class="nav-item mx-2"><a class="nav-link" href="{% url 'manager_home' %}">Manager vision</a></li>
+                    {% endif %} 
+                {% endfor %}
+
+                {% if user.group %}
+
+                {% endif %}
                 <li class="nav-item mx-2"><a class="nav-link" href="{% url 'home' %}">Products</a></li>
                 <li class="nav-item mx-2"><a class="nav-link" href="{% url 'view_cart' %}">Cart</a></li>
                 <li class="nav-item mx-2"><a class="nav-link" href="{% url 'orders_history' %}">History</a></li>
