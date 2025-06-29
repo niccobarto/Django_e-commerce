@@ -14,7 +14,7 @@ class Category(models.Model):
 
 #The products available in the store
 class Product(models.Model):
-    category=models.ForeignKey(Category, on_delete=models.CASCADE)
+    category=models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     name=models.CharField(max_length=50)
     price=models.DecimalField(default=0,decimal_places=2,max_digits=6)
     front_image=models.ImageField(upload_to="uploads/product")

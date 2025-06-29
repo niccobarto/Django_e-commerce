@@ -1,5 +1,4 @@
 from logging import raiseExceptions
-
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import permission_required, login_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -7,6 +6,7 @@ from django.contrib.auth.decorators import user_passes_test
 from .decorators import is_manager
 from store.models import Product, Category
 from django.views.generic import ListView
+from django.contrib import messages
 # Create your views here.
 
 
@@ -39,11 +39,33 @@ def manage_product(request,product_id):
 @permission_required('store_addcategory', raise_exception=True)
 @permission_required('store_deletecategory', raise_exception=True)
 def m_categories_list(request):
-    pass
+    if request.method=="POST":
+        action=request.POST.get('action')
+        name=request.POST.get('name')
+        category_id=request.POST.get('category_id')
 
-@permission_required('accounts_changeuser', raise_exception=True)
-def m_users_list(request):
-    pass
+        if action=="add":
+            if name:
+                Category.objects.create(name=name)
+                messages.success(request,'Category added')
+        elif action=="update":
+            if category_id:
+                Category.objects.filter(id=category_id).update(name=name)
+                messages.success(request,'Category changed')
+        elif action=="delete":
+            if category_id:
+                no_categorized = Product.objects.filter(category_id=category_id).count()
+                Category.objects.filter(id=category_id).delete()
+                if no_categorized==0:
+                    messages.success(request,'Category deleted. No products changed')
+                elif no_categorized==1:
+                    messages.success(request,f"Category deleted. Now {no_categorized} product have no category")
+                else:
+                    messages.success(request, f"Category deleted. Now {no_categorized} products have no category")
+        return redirect('manage_categories')
+    else:
+        categories = Category.objects.all()
+        return render(request,'management/manage_categories.html',{'categories':categories})
 
 @permission_required('order_vieworder', raise_exception=True)
 @permission_required('order_vieworderitem', raise_exception=True)
