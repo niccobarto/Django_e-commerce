@@ -15,18 +15,22 @@ def view_cart(request):
     items=CartItem.objects.filter(customer=customer)
     cleaned_cart=[]
     for item in items:
-        if not check_product_availability(item.product.id,item.quantity):
-            to_remove=item.quantity-item.product.quantity
-            if item.quantity-to_remove <= 0:
-                item.delete()
-                messages.warning(request,f"{item.product.name} not available anymore")
+        if item.product.is_active:
+            if not check_product_availability(item.product.id,item.quantity):
+                to_remove=item.quantity-item.product.quantity
+                if item.quantity-to_remove <= 0:
+                    item.delete()
+                    messages.warning(request,f"{item.product.name} not available anymore")
+                else:
+                    item.quantity-=to_remove
+                    item.save()
+                    cleaned_cart.append(item)
+                    messages.warning(request,f"Removed {to_remove} elements of {item.product.name} not available anymore")
             else:
-                item.quantity-=to_remove
-                item.save()
                 cleaned_cart.append(item)
-                messages.warning(request,f"Removed {to_remove} elements of {item.product.name} not available anymore")
         else:
-            cleaned_cart.append(item)
+            item.delete()
+            messages.warning(request, f"{item.product.name} not available anymore")
     return render(request,"cart/cart.html",{'total_items':cart_total_items(cleaned_cart),'total_price':cart_total_price(cleaned_cart),'items':cleaned_cart})
 
 @login_required(login_url='login')
