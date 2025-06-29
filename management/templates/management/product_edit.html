@@ -1,0 +1,101 @@
+{% extends 'management/manager_vision_base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container py-4" style="max-width: 900px;width: 100%">
+        <h2 class="mb-4">Edit Product</h2>
+
+        <form method="POST" enctype="multipart/form-data" class="bg-secondary p-4 rounded shadow-sm">
+            {% csrf_token %}
+
+            <!-- Nome -->
+            <div class="mb-3">
+                <label for="name" class="form-label">Product name</label>
+                <input type="text" class="form-control" name="name" id="name" value="{{ product.name }}" required>
+            </div>
+
+            <!-- Descrizione -->
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" name="description" id="description" rows="4">{{ product.description|default:"" }}
+                </textarea>
+            </div>
+
+            <!-- Prezzo -->
+            <div class="mb-3">
+                <label for="price" class="form-label">Price (€)</label>
+                <input type="number" class="form-control" name="price" id="price" step="0.01" min="0" value="{{ product.price }}" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="quantity" class="form-label">Quantity</label>
+                <input type="number" class="form-control" name="quantity" id="quantity" step="1" min="0" value="{{ product.quantity }}" required>
+            </div>
+            <!-- Categoria -->
+            <div class="mb-3">
+                <label for="category" class="form-label">Category</label>
+                <select class="form-select" name="category" id="category" required>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}" {% if category.id == product.category.id %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="front_image" class="form-label">Image</label>
+
+                <!-- Immagini attuale + nuova -->
+                <div class="d-flex flex-wrap gap-4 mb-2">
+
+                    <!-- Immagine attuale -->
+                    {% if product.front_image %}
+                        <div class="text-center">
+                            <p class="mb-1 text-muted">Current image:</p>
+                            <img src="{{ product.front_image.url }}"
+                                 alt="Current image"
+                                 class="img-fluid rounded border"
+                                 style="max-height: 200px;">
+                        </div>
+                    {% endif %}
+
+                    <!-- Nuova immagine selezionata -->
+                    <div class="text-center position-relative" id="image-preview" style="display: none;">
+                        <p class="mb-1 text-muted">New selected image:</p>
+
+                        <!-- Pulsante X per annullare -->
+                        <button type="button"
+                                id="cancel-image-btn"
+                                aria-label="Cancel"
+                                class="cancel-x-btn position-absolute m-2">
+                            <span>&times;</span>
+                        </button>
+
+                        <img id="preview-img"
+                             class="img-fluid rounded border"
+                             style="max-height: 200px;"
+                             alt="Preview image">
+                    </div>
+                </div>
+
+                <!-- Input file -->
+                <input type="file" class="form-control" name="front_image" id="front_image" accept="image/*">
+            </div>
+            <!-- Sconto -->
+            <div class="mb-3">
+                <label for="discount" class="form-label">Discount (%)</label>
+                <input type="number" class="form-control" name="discount" id="discount" min="0" max="100" value="{{ product.discount|default_if_none:'0' }}">
+            </div>
+
+            <!-- Visibilità -->
+            <div class="form-check form-switch mb-4">
+                <input class="form-check-input" type="checkbox" name="is_active" id="is_active" {% if product.is_active %}checked{% endif %}>
+                <label class="form-check-label" for="is_active">Visible in store</label>
+            </div>
+
+            <!-- Pulsante di salvataggio -->
+            <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+        </form>
+    </div>
+    <script src="{% static 'js/product_edit.js' %}"></script>
+{% endblock %}

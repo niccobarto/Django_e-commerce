@@ -19,3 +19,27 @@ body {
   background-color: #ffffff;
   border: 1px solid #dee2e6;
 }
+.cancel-x-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    right: -20px;
+    top:9px;
+    border-radius: 50%;
+    background-color: #000;
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    z-index: 10;
+    transition: background-color 0.2s ease;
+}
+
+.cancel-x-btn:hover {
+    background-color: #333;
+}

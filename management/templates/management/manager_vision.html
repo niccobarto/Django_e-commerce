@@ -1,3 +1,52 @@
 {% extends "management/manager_vision_base.html" %}
+
 {% block content %}
+<div class="container py-5">
+    <h2 class="mb-4 text-center">Manager Dashboard</h2>
+    <h3>Welcome back, {{ user.username }}</h3>
+    <br/>
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+
+        <!-- Products -->
+        <div class="col">
+            <a href="{% url 'manage_products' %}" class="text-decoration-none">
+                <div class="card text-white bg-primary h-100 text-center p-4 shadow">
+                    <h3>Manage Products</h3>
+                    <p class="mb-0">View, change or add new products</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Categories -->
+        <div class="col">
+            <a href="#" class="text-decoration-none">
+                <div class="card text-white bg-success h-100 text-center p-4 shadow">
+                    <h3>Manage Categories</h3>
+                    <p class="mb-0">Change or add new categories</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Users -->
+        <div class="col">
+            <a href="#" class="text-decoration-none">
+                <div class="card text-white bg-dark h-100 text-center p-4 shadow">
+                    <h3>Manage Users</h3>
+                    <p class="mb-0">View and manage users registered</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Orders -->
+        <div class="col">
+            <a href="#" class="text-decoration-none">
+                <div class="card text-white bg-warning h-100 text-center p-4 shadow">
+                    <h3>Manage Orders</h3>
+                    <p class="mb-0">Monitor and update order shipment status</p>
+                </div>
+            </a>
+        </div>
+
+    </div>
+</div>
 {% endblock %}

@@ -63,7 +63,7 @@
                                     <p class="pb-3 text-danger fw-bold m-0">{{ product.quantity }} element available</p>
                                 {% endif %}
                                 <div class="mt-auto">
-                                    <a type="submit" href="{% url 'add_cart' product.pk %}" class="btn btn-primary w-100">Manage</a>
+                                    <a type="submit" href="{% url 'product_edit' product.pk %}" class="btn btn-primary w-100">Manage</a>
                                 </div>
                             </div>
                         </div>
