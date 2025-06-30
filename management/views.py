@@ -1,12 +1,18 @@
 from logging import raiseExceptions
+from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import permission_required, login_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.decorators import user_passes_test
 from .decorators import is_manager
 from store.models import Product, Category
+from accounts.models import CustomUser
 from django.views.generic import ListView
 from django.contrib import messages
+from django.db.models.functions import Concat
+from django.db.models import Value
+from django.db.models import Q
+from django.contrib.auth.models import Group
 # Create your views here.
 
 
@@ -66,6 +72,43 @@ def m_categories_list(request):
     else:
         categories = Category.objects.all()
         return render(request,'management/manage_categories.html',{'categories':categories})
+
+@permission_required('accounts_viewcustomuser', raise_exception=True)
+@permission_required('accounts_changecustomuser', raise_exception=True)
+@user_passes_test(is_manager)
+def m_users(request):
+    if request.method=="POST":
+        user_id=request.POST.get('user_id')
+        user=CustomUser.objects.get(id=user_id)
+        action=request.POST.get('action')
+        if request.user==user:
+            messages.error(request,"You can't change your own role")
+            return redirect('manage_users')
+
+        if action=="make_manager":
+            group = Group.objects.get(name='Manager')
+            user.groups.clear()
+            user.groups.add(group)
+            messages.success(request, f"{user.username} è ora Manager")
+        if action=="make_customer":
+            group = Group.objects.get(name='Customer')
+            user.groups.clear()
+            user.groups.add(group)
+            messages.success(request, f"{user.username} è ora Customer")
+        return redirect('manage_users')
+    else:
+        users = CustomUser.objects.filter()
+        context_name = request.GET.get('user_search')
+        if context_name:
+            users = CustomUser.objects.annotate(
+                full_name_db=Concat('first_name', Value(' '), 'last_name')
+            ).filter(
+                Q(username__icontains=context_name) |
+                Q(first_name__icontains=context_name) |
+                Q(last_name__icontains=context_name) |
+                Q(full_name_db__icontains=context_name)
+            )
+        return render(request,'management/manage_users.html',{'users':users,'searched':context_name})
 
 @permission_required('order_vieworder', raise_exception=True)
 @permission_required('order_vieworderitem', raise_exception=True)

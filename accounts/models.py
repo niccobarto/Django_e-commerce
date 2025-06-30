@@ -5,7 +5,9 @@ from django_countries.fields import CountryField
 
 class CustomUser(AbstractUser):
     phone=models.CharField(max_length=10, null=True, blank=True)
-
+    @property
+    def full_name(self):
+        return self.first_name + " " + self.last_name
 class UserAddress(models.Model):
     customer=models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=20)
