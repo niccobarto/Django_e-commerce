@@ -1,6 +1,6 @@
     const input = document.getElementById('front_image');
     const previewBox = document.getElementById('image-preview');
-    const previewImg = document.getElementById('preview-img');
+    const previewImg = document.getElementById('preview_img');
     const cancelBtn = document.getElementById('cancel-image-btn');
 
     input.addEventListener('change', function () {
@@ -9,7 +9,8 @@
             const reader = new FileReader();
             reader.onload = function (e) {
                 previewImg.src = e.target.result;
-                previewBox.style.display = 'block';
+                previewBox.style.display = 'flex';
+
             };
             reader.readAsDataURL(file);
         } else {
