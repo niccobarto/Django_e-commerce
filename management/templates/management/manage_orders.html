@@ -1,0 +1,95 @@
+{% extends 'management/manager_vision_base.html' %}
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- COLONNA FILTRI -->
+        <div class="col-md-3 text-black">
+            <div class="position-sticky" style="top: 100px;">
+                <form method="get" class="bg-light p-3 rounded shadow-sm">
+                    <h5 class="mb-3">Filter orders</h5>
+
+                    <!-- Ricerca per utente -->
+                    <div class="mb-3">
+                        <label for="user_search" class="form-label">User (username or full name)</label>
+                        <input type="text" name="user" class="form-control" id="user_search" value="{{ request.GET.user }}">
+                    </div>
+
+                    <!-- Ricerca per prodotto -->
+                    <div class="mb-3">
+                        <label for="product_search" class="form-label">Product name</label>
+                        <input type="text" name="product" class="form-control" id="product_search" value="{{ request.GET.product }}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Category</label>
+                        <select name="category" class="form-select">
+                            <option value="">All</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.id }}" {% if request.GET.category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="country" class="form-label">Country</label>
+                        <select name="country" class="form-select">
+                            <option value="">All</option>
+                            {% for code, name in countries %}
+                                <option value="{{ code }}" {% if request.GET.country == code %}selected{% endif %}>{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="city" class="form-label">City</label>
+                        <input type="text" name="city" class="form-control" id="city" value="{{ request.GET.city }}">
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                        <a type="button" class="btn btn-outline-danger" href="{% url 'manage_orders' %}" ">Reset filters</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- COLONNA RISULTATI -->
+        <div class="col-md-9" style="min-height: 100vh">
+            <h2 class="fw-bold mb-4 mt-5">Manage Orders</h2>
+
+            <div class="row row-gap-3">
+                {% for order in orders %}
+                    <div class="col-12 col-sm-6 col-lg-4">
+                        <a href="{% url 'order_detail' order.id %}" class="text-decoration-none text-dark">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title fw-bold">#{{ order.id }}</h5>
+                                    <p class="card-text">
+                                        <label class="fw-bold">Customer:</label> {{ order.customer.first_name }} {{ order.customer.last_name }} | {{ order.customer.username }}<br>
+                                        <label class="fw-bold">Shipment status:</label>
+                                        <span class="badge
+                                            {% if order.status == 'PENDING' %}bg-warning
+                                            {% elif order.status == 'IN_TRANSIT' %}bg-secondary
+                                            {% elif order.status == 'DELIVERED' %}bg-success
+                                            {% elif order.status == 'LOST' %}bg-danger
+                                            {% endif %}">
+                                            {{ order.get_status_display }}
+                                        </span><br>
+                                        <label class="fw-bold">City-Country:</label> {{ order.shipment_city }} - {{ order.shipment_country }}<br>
+                                        <label class="fw-bold">Total price:</label> {{ order.total_price }}€<br>
+                                        <label class="fw-bold">Date:</label> {{ order.datetime|date:"d/m/Y" }}
+                                    </p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {% empty %}
+                    <p>No order found by the filters</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SCRIPT PER RESET -->
+{% endblock %}

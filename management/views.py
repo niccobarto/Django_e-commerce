@@ -4,13 +4,16 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import permission_required, login_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.decorators import user_passes_test
+from django_countries import countries
+from order.models import Order, OrderItem
 from .decorators import is_manager
 from store.models import Product, Category
 from accounts.models import CustomUser
-from django.views.generic import ListView
+from django.views.generic import ListView, TemplateView
 from django.contrib import messages
 from django.db.models.functions import Concat
 from django.db.models import Value
+from django.db.models.functions import Lower
 from django.db.models import Q
 from django.contrib.auth.models import Group
 # Create your views here.
@@ -110,11 +113,65 @@ def m_users(request):
             )
         return render(request,'management/manage_users.html',{'users':users,'searched':context_name})
 
-@permission_required('order_vieworder', raise_exception=True)
-@permission_required('order_vieworderitem', raise_exception=True)
-def m_orders_list(request):
-    pass
+class ManagerOrderView(PermissionRequiredMixin, ListView):
+    model=Order
+    template_name='management/manage_orders.html'
+    context_object_name='orders'
+    permission_required=['order_vieworder',
+                         'order_vieworderitem',
+                         'order_changeorder']
 
+    def get_queryset(self):
+        queryset = Order.objects.all()
+        user_context=self.request.GET.get('user')
+        product_name=self.request.GET.get('product')
+        category_id=self.request.GET.get('category')
+        country_code=self.request.GET.get('country')
+        city=self.request.GET.get('city')
+
+        if product_name:
+            queryset=queryset.filter(items__product__name__icontains=product_name)
+        if category_id:
+            queryset=queryset.filter(items__product__category_id=category_id)
+        if country_code:
+            queryset = queryset.filter(shipment_country=country_code)
+        if city:
+            queryset = queryset.filter(Q(**{ 'shipment_city__icontains': city }))
+        if user_context:
+            queryset = queryset.annotate(
+                full_name_db=Concat('customer__first_name', Value(' '), 'customer__last_name'),
+            ).filter(
+                Q(customer__username__icontains=user_context) |
+                Q(customer__first_name__icontains=user_context) |
+                Q(customer__last_name__icontains=user_context) |
+                Q(full_name_db__icontains=user_context)
+            )
+        return queryset
+
+    def get_context_data(
+            self, *, object_list=..., **kwargs
+    ):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Category.objects.all()
+        used_codes = Order.objects.values_list('shipment_country', flat=True).distinct()
+        used_countries = [(code, countries.name(code)) for code in used_codes if code]
+        context['countries'] = list(used_countries)
+        return context
+def order_detail(request,order_id):
+    order = Order.objects.get(id=order_id)
+    order_status_choices=Order._meta.get_field('status').choices
+
+    if request.method=="POST":
+        new_status=request.POST.get('status')
+        if new_status in dict(order_status_choices):
+            order.status=new_status
+            order.save()
+            messages.success(request,f"Order status changed to {new_status}")
+        else:
+            messages.error(request,f"Invalid order status")
+        return redirect('order_detail',order_id=order_id)
+    else:
+        return render(request,'management/order_detail.html',{'order':order,'status_choices':order_status_choices})
 class ManagerProductView(PermissionRequiredMixin, ListView):
     model = Product  # indica il modello da cui prendere i dati
     template_name = 'management/manage_products.html'  # il tuo template personalizzato
