@@ -1,4 +1,4 @@
-    <!-- Navbar -->
+<!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg fixed-top">
     <div class="container-fluid">
         <a class="navbar-brand" href="{% url 'home' %}">E-Commerce</a>
@@ -7,18 +7,17 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                {% for group in user.groups.all %}
-                    {% if group.name == "Manager" %}
-                        <li class="nav-item mx-2"><a class="nav-link" href="{% url 'manager_home' %}">Manager vision</a></li>
-                    {% endif %} 
-                {% endfor %}
-
                 {% if user.group %}
 
                 {% endif %}
                 <li class="nav-item mx-2"><a class="nav-link" href="{% url 'home' %}">Products</a></li>
                 <li class="nav-item mx-2"><a class="nav-link" href="{% url 'view_cart' %}">Cart</a></li>
                 <li class="nav-item mx-2"><a class="nav-link" href="{% url 'orders_history' %}">History</a></li>
+                {% for group in user.groups.all %}
+                    {% if group.name == "Manager" %}
+                        <li class="nav-item mx-2 bg-warning border-2 rounded px-2 fw-bold"><a class="nav-link text-dark" href="{% url 'manager_home' %}">Manager vision</a></li>
+                    {% endif %}
+                {% endfor %}
                 {% if user.is_authenticated %}
                     <li class="nav-item mx-2"><a class="nav-link border bg-primary border-primary rounded px-2" href="{% url 'logout' %}">Logout</a></li>
                 {% else %}
