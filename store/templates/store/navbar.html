@@ -1,12 +1,8 @@
-<!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top justify-content-center rounded-bottom" style="background-color: darkcyan">
     <div class="container me-0 ms-1 w-100">
-        <!-- Brand -->
         <a class="navbar-brand me-3 fw-bold text-uppercase" href="{% url 'home' %}">
-    TechZone <small class="text-light d-block" style="font-size: 0.6rem;">Smart devices for smart lives</small>
-</a>
-
-        <!-- Hamburger Toggler -->
+            TechZone <small class="text-light d-block" style="font-size: 0.6rem;">Smart devices for smart lives</small>
+        </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -25,10 +21,10 @@
                         </a>
                     </li>
                     {% for group in user.groups.all %}
-                                    {% if group.name == "Manager" %}
-                                        <li class="nav-item d-flex align-items-center text-dark me-auto btn btn-warning rounded p-0"><a class="nav-link text-dark fw-bold" href="{% url 'manager_home' %}">Manager Vision</a></li>
-                                    {% endif %}
-                                {% endfor %}
+                        {% if group.name == "Manager" %}
+                            <li class="nav-item d-flex align-items-center text-dark me-auto btn btn-warning rounded p-0"><a class="nav-link text-dark fw-bold" href="{% url 'manager_home' %}">Manager Vision</a></li>
+                        {% endif %}
+                    {% endfor %}
                     {% if user.is_authenticated %}
 
                         <li class="nav-item d-flex flex-column flex-lg-row align-items-center text-white me-auto dropdown justify-content-start">
@@ -38,7 +34,7 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><a class="dropdown-item text-dark" href="{% url 'orders_history' %}">Orders</a></li>
-                                <li><a class="dropdown-item text-dark" href="#">Account</a></li>
+                                <li><a class="dropdown-item text-dark" href="{% url 'edit_account' %}">Account</a></li>
                                 <li><hr class="dropdown-divider"></li>
 
                                 <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">Logout</a></li>
