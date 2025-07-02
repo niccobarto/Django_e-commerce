@@ -1,21 +1,21 @@
 {% extends 'store/base.html' %}
 {% block content %}
 
-<div class="container py-4 d-flex justify-content-center">
-    <div style="max-width: 800px; width: 100%;">
-        <h2 class="mb-4 text-center">History of your orders</h2>
+    <div class="container py-4 d-flex justify-content-center">
+        <div style="max-width: 800px; width: 100%;">
+            <h2 class="mb-4 text-center">History of your orders</h2>
 
-        {% if history %}
-            {% for order_items, order in history %}
-                <div class="card mb-4 shadow-sm">
-                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                        <strong>Order #{{ order.id }}</strong>
-                        <small class="text-muted">{{ order.datetime|date:"d M Y" }}</small>
-                    </div>
-                    <div class="card-body">
-                        <p class="mb-1"><strong>Address:</strong> {{ order.address_str }}</p>
-                        <p class="mb-2"><strong>Status:</strong>
-                            <span class="badge
+            {% if history %}
+                {% for order_items, order in history %}
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                            <strong>Order #{{ order.id }}</strong>
+                            <small class="text-muted">{{ order.datetime|date:"d M Y" }}</small>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-1"><strong>Address:</strong> {{ order.address_str }}</p>
+                            <p class="mb-2"><strong>Status:</strong>
+                                <span class="badge
                                 {% if order.status == 'PENDING' %}bg-warning
                                 {% elif order.status == 'IN_TRANSIT' %}bg-secondary
                                 {% elif order.status == 'DELIVERED' %}bg-success
@@ -23,29 +23,33 @@
                                 {% endif %}">
                                 {{ order.get_status_display }}
                             </span>
-                        </p>
+                            </p>
 
-                        <ul class="list-group list-group-flush">
-                            {% for item in order_items %}
-                                <li class="list-group-item">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <img src="/media/{{ item.product_image }}" alt="{{ item.product_name }}"
-                                             class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
-                                        <div class="flex-grow-1">
-                                            <div>{{ item.product.name }}</div>
+                            <ul class="list-group list-group-flush">
+                                {% for item in order_items %}
+                                    <li class="list-group-item">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <img src="/media/{{ item.product_image }}" alt="{{ item.product_name }}"
+                                                 class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
+                                            <div class="flex-grow-1">
+                                                <div>{{ item.product_name }}
+                                                    {% if not item.product %}
+                                                        <span class="bg bg-danger text-light rounded px-1 py-1" style=" margin-left: 5px">Deleted</span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <span class="badge bg-dark rounded-pill">{{ item.quantity }}</span>
                                         </div>
-                                        <span class="badge bg-dark rounded-pill">{{ item.quantity }}</span>
-                                    </div>
-                                </li>
-                            {% endfor %}
-                        </ul>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
                     </div>
-                </div>
-            {% endfor %}
-        {% else %}
-            <div class="alert alert-info text-center">You have not placed any orders yet.</div>
-        {% endif %}
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-info text-center">You have not placed any orders yet.</div>
+            {% endif %}
+        </div>
     </div>
-</div>
 
 {% endblock %}

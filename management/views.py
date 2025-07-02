@@ -212,3 +212,18 @@ def create_product(request):
     else:
         form=ProductForm()
     return render(request,'management/create_product.html',{'form':form})
+
+@permission_required("store_deleteproduct",raise_exception=True)
+def delete_product(request,product_id):
+    product = Product.objects.get(id=product_id)
+    order_count = OrderItem.objects.filter(product=product).count()
+
+    if request.method == "POST":
+        product.delete()
+        messages.success(request, "Product deleted with success")
+        return redirect('manage_products')
+
+    return render(request, 'management/delete_item.html', {
+        'product': product,
+        'order_count': order_count
+    })

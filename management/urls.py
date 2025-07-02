@@ -10,4 +10,5 @@ urlpatterns = [
     path('list_orders/',views.ManagerOrderView.as_view(),name='manage_orders'),
     path('order_detail/<int:order_id>',views.order_detail,name='order_detail'),
     path('add_product/',views.create_product,name='create_product'),
+    path('delete/<int:product_id>',views.delete_product,name='delete_product'),
 ]
