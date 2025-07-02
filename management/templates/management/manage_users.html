@@ -30,10 +30,7 @@
                     <div class="card h-100 text-dark shadow-sm">
 
                         <div class="card-body d-flex flex-column">
-                            <!-- Username -->
                             <h5 class="card-title fw-bold">{{ usr.username }}</h5>
-
-                            <!-- Users info -->
                             <p class="mb-1"><strong>First name:</strong> {{ usr.first_name }}</p>
                             <p class="mb-1"><strong>Last name:</strong> {{ usr.last_name }}</p>
                             <p class="mb-1"><strong>Email:</strong> {{ usr.email }}</p>
@@ -51,7 +48,6 @@
                             {% if usr == user %}
                                 <p class="text-center fw-semibold">This is you!</p>
                             {%else %}
-                            <!-- Change role button -->
                             <form method="POST" action="#" class="mt-auto">
                                 {% csrf_token %}
                                 <input type="hidden" name="user_id" value="{{ usr.id }}">

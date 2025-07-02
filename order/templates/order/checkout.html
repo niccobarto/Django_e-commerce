@@ -1,43 +1,60 @@
 {% extends "store/base.html" %}
 {% block content %}
-    <div class="container py-5">
-        <h2 class="mb-4">Checkout</h2>
-        <br/>
-        <br/>
-        <!-- Sezione indirizzi -->
+    <div class="container py-5" style="max-width: 800px;">
+        <h2 class="mb-4 text-center">Checkout</h2>
         <div class="mb-4">
-            <h4>Shipment address</h4>
-            <div class="text-black bg-white rounded p-1" style="display: inline">{{address}}</div>
+            <h4>Shipment Address</h4>
+            <div class="bg-light border rounded p-3 text-dark">
+                <p><strong>Receiver:</strong> {{ address.first_name }} {{ address.last_name }}</p>
+                <p><strong>Street:</strong> {{ address.street_address }}</p>
+                <p><strong>Postal Code:</strong> {{ address.postal_code }}</p>
+                <p><strong>City:</strong> {{ address.city }}</p>
+                <p><strong>Country:</strong> {{ address.country }}</p>
+            </div>
         </div>
-        <br/>
-        <br/>
-        <h4>Order summary</h4>
-        <table class="table">
-            <thead>
-            <tr>
-                <th>Product</th>
-                <th>Quantity</th>
-                <th>Price</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for item in cart_items %}
+        <div class="mb-4">
+            <h4>Payment Method</h4>
+            <div class="bg-light border rounded p-3 text-dark">
+                <p><strong>Card Holder:</strong> {{ request.session.card_holder }}</p>
+                <p><strong>Card Number:</strong> **** **** **** {{ request.session.card_number|slice:"-4:" }}</p>
+                <p><strong>Expiry:</strong> {{ request.session.card_expiry }}</p>
+                <p><strong>CVC:</strong> ***</p>
+            </div>
+        </div>
+        <div class="mb-4">
+            <h4>Order Summary</h4>
+            <table class="table table-striped align-middle">
+                <thead>
                 <tr>
-                    <td>{{ item.product.name }}</td>
-                    <td>{{ item.quantity }}</td>
-                    <td>€{{ item.product.price }}</td>
+                    <th></th>
+                    <th>Product</th>
+                    <th class="text-center">Quantity</th>
+                    <th class="text-end">Price</th>
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-
-        <div class="text-end">
+                </thead>
+                <tbody>
+                {% for item in cart_items %}
+                    <tr>
+                        <td style="width: 80px;">
+                            <img src="{{ item.product.front_image.url }}" alt="{{ item.product.name }}" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;">
+                        </td>
+                        <td>{{ item.product.name }}</td>
+                        <td class="text-center">{{ item.quantity }}</td>
+                        <td class="text-end">€{{ item.product.price }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="text-end mb-4">
             <h5 class="fw-bold">Total: €{{ total_price }}</h5>
         </div>
-
-        <div class="mt-4 text-end">
-            <a type="button" href="{% url 'confirm_order' %}" class="btn btn-success">Confirm order</a>
-        </div>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="text-end">
+                <button type="submit" class="btn btn-success">Confirm Order</button>
+            </div>
+        </form>
 
     </div>
 {% endblock %}

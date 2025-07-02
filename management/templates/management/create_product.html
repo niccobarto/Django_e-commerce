@@ -5,8 +5,6 @@
     <div class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-lg-8">
-
-                <!-- Title -->
                 <h2 class="mb-4 mt-4">Add new Product</h2>
 
                 {% for field in form %}
@@ -14,55 +12,36 @@
                         <div class="alert alert-danger">{{ field.label }}: {{ error }}</div>
                     {% endfor %}
                 {% endfor %}
-
-                <!-- Form -->
                 <div class="card shadow-sm">
                     <div class="card-body p-4">
                         <form method="POST" enctype="multipart/form-data">
                             {% csrf_token %}
-
-                            <!-- Nome -->
                             <div class="mb-3">
                                 <label for="id_name" class="form-label"><strong>Product Name</strong></label>
                                 {{ form.name|add_class:"form-control" }}
                             </div>
-
-                            <!-- Categoria -->
                             <div class="mb-3">
                                 <label for="id_category" class="form-label"><strong>Category</strong></label>
                                 {{ form.category|add_class:"form-select" }}
                             </div>
-
-                            <!-- Prezzo -->
                             <div class="mb-3">
                                 <label for="id_price" class="form-label"><strong>Price (€)</strong></label>
                                 {{ form.price|add_class:"form-control" }}
                             </div>
-
-                            <!-- Quantità -->
                             <div class="mb-3">
                                 <label for="id_quantity" class="form-label"><strong>Quantity</strong></label>
                                 {{ form.quantity|add_class:"form-control" }}
                             </div>
-
-                            <!-- Descrizione -->
                             <div class="mb-3">
                                 <label for="id_description" class="form-label"><strong>Description</strong></label>
                                 {{ form.description|add_class:"form-control" }}
                             </div>
-
-                            <!-- Immagine -->
                             <div class="mb-3">
                                 <label for="id_front_image" class="form-label"><strong>Product Image</strong></label>
-
-                                <!-- Preview container -->
                                 <div id="image-preview"
                                      class="position-relative justify-content-start"
                                      style="display: none;">
-
-                                    <!-- Box con immagine e X -->
                                     <div class="position-relative d-inline-block">
-                                        <!-- Pulsante X -->
                                         <button type="button"
                                                 id="cancel-image-btn"
                                                 aria-label="Cancel"
@@ -70,26 +49,18 @@
                                                 style="z-index: 2; padding: 0.25rem 0.5rem;">
                                             &times;
                                         </button>
-
-                                        <!-- Immagine -->
                                         <img id="preview-img"
                                              class="img-thumbnail rounded border"
                                              style="max-width: 150px; height: auto;"
                                              alt="Preview image">
                                     </div>
                                 </div>
-                                <!-- Input -->
                                 {{ form.front_image|add_class:"form-control mt-2"}}
                             </div>
-
-
-                            <!-- Attivo -->
                             <div class="mb-3 form-check">
                                 {{ form.is_active }}
                                 <label class="form-check-label" for="id_is_active"><strong>Is active</strong></label>
                             </div>
-
-                            <!-- Pulsanti -->
                             <div class="d-flex justify-content-between mt-4">
                                 <a href="{% url 'manage_products' %}" class="btn btn-outline-secondary">Cancel</a>
                                 <button type="submit" class="btn btn-success">Create Product</button>
