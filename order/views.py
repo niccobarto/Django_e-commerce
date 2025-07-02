@@ -111,7 +111,7 @@ def confirm_order(request):
 @login_required(login_url='login')
 def orders_history(request):
     customer = request.user
-    orders = Order.objects.filter(customer=customer)
+    orders = Order.objects.filter(customer=customer).order_by('-datetime')
     history=[]
     for order in orders:
         order_items=OrderItem.objects.filter(order=order)
