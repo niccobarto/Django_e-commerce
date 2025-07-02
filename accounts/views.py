@@ -1,9 +1,10 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render,redirect
 from django.contrib.auth.models import Group
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.password_validation import password_validators_help_texts
-from accounts.forms import CustomUserCreationForm,CustomUserLoginForm
+from accounts.forms import CustomUserCreationForm,CustomUserLoginForm,CustomUserChangeForm
 from django.contrib.auth.forms import AuthenticationForm
 
 
@@ -50,3 +51,16 @@ def register_user(request):
         form=CustomUserCreationForm()
         help_texts=password_validators_help_texts()
         return render(request,"accounts/register.html",{"creation_form":form,"help_texts":help_texts})
+
+@login_required(login_url="login")
+def edit_account(request):
+    user = request.user
+    if request.method == 'POST':
+        form = CustomUserChangeForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = CustomUserChangeForm(instance=user)
+
+    return render(request, 'accounts/edit_account.html', {'form': form})

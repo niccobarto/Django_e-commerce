@@ -1,6 +1,6 @@
 from django import forms
 from .models import UserAddress
-from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm,AuthenticationForm,UserChangeForm
 from .models import CustomUser
 
 
@@ -26,6 +26,13 @@ class CustomUserCreationForm(UserCreationForm):
             field.widget.attrs['class']='form-control'
             if self.errors.get(field_name):
                 field.widget.attrs['class']+='form-control is-invalid'
+
+class CustomUserChangeForm(UserChangeForm):
+    password=None
+    class Meta:
+        model=CustomUser
+        fields=['username','first_name','last_name','email','phone','image_profile']
+
 
 class UserAddressForm(forms.ModelForm):
     class Meta:
