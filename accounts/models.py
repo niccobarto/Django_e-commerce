@@ -4,10 +4,13 @@ from django_countries.fields import CountryField
 # Create your models here.
 
 class CustomUser(AbstractUser):
+    email = models.EmailField(unique=True,null=False,blank=False)
     phone=models.CharField(max_length=10, null=True, blank=True)
+    image_profile=models.ImageField(upload_to="uploads/image_profile", null=True, default="uploads/image_profile/default.pgn")
     @property
     def full_name(self):
         return self.first_name + " " + self.last_name
+
 class UserAddress(models.Model):
     customer=models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=20)

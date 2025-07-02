@@ -7,11 +7,11 @@ class CustomUserAdmin(UserAdmin):
     model = CustomUser
 
     fieldsets = UserAdmin.fieldsets + (
-        (None, {'fields': ('phone',),}),
+        (None, {'fields': ('phone','image_profile'),}),
     )
 
     add_fieldsets = UserAdmin.add_fieldsets + (
-        (None, {'fields': ('phone',),}),
+        (None, {'fields': ('phone','image_profile'),}),
     )
 
     list_display = [
@@ -20,7 +20,6 @@ class CustomUserAdmin(UserAdmin):
         'first_name',
         'last_name',
         'phone',
-        'is_staff',
     ]
 
 admin.site.register(CustomUser, CustomUserAdmin)

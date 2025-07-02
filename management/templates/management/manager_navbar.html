@@ -1,33 +1,53 @@
-    <!--Manager Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg fixed-top">
-    <div class="container fluid">
-         <a class="navbar-brand d-flex align-items-center gap-2 m-0" href="{% url 'manager_home' %}">
-            <span>E-Commerce</span>
-            <span class="text-white">|</span>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top justify-content-center rounded-bottom" style="background-color: darkcyan">
+    <div class="container me-0 ms-1 w-100">
+        <!-- Brand -->
+        <a class="navbar-brand  d-flex align-items-center gap-2 m-0" href="{% url 'manager_home' %}">
+            <div class="d-flex flex-column fw-bold text-uppercase">
+                TechZone
+            </div>
+            <div style="width: 1px; height: 2rem; background-color: white;"></div>
             <span class="text-warning fw-semibold">Manager vision</span>
         </a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <!-- Hamburger Toggler -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                {% for group in user.groups.all %}
-                    {% if group.name == "Manager" %}
-                        <li class="nav-item mx-2"><a class="nav-link" href="{% url 'manage_products' %}">Products</a></li>
-                        <li class="nav-item mx-2"><a class="nav-link" href="{% url 'manage_categories' %}">Categories</a></li>
-                        <li class="nav-item mx-2"><a class="nav-link" href="{% url 'manage_users' %}">Users</a></li>
-                        <li class="nav-item mx-2"><a class="nav-link" href="{% url 'manage_orders' %}">Orders</a></li>
-                        <li class="nav-item mx-2 bg-warning border-2 rounded px-2 fw-bold"><a class="nav-link text-dark" href="{% url 'home' %}">Back to Store</a></li>
+
+        <!-- Offcanvas content -->
+        <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasNavbar">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title">Menu</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul class="navbar-nav ms-auto gap-2">
+                    <li class="nav-item d-flex align-items-center text-white me-auto"><a class="nav-link" href="{% url 'manage_products' %}">Products</a></li>
+                    <li class="nav-item d-flex align-items-center text-white me-auto"><a class="nav-link" href="{% url 'manage_categories' %}">Categories</a></li>
+                    <li class="nav-item d-flex align-items-center text-white me-auto"><a class="nav-link" href="{% url 'manage_users' %}">Users</a></li>
+                    <li class="nav-item d-flex align-items-center text-white me-auto"><a class="nav-link" href="{% url 'manage_orders' %}">Orders</a></li>
+                    <li class="nav-item d-flex align-items-center text-dark me-auto btn btn-warning rounded p-0"><a class="nav-link text-dark fw-bold" href="{% url 'home' %}">Back to store</a></li>
+                    {% if user.is_authenticated %}
+                        <!-- Dropdown Profile -->
+                        <li class="nav-item d-flex flex-column flex-lg-row align-items-center text-white me-auto dropdown justify-content-start">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                <img src="{{ user.image_profile.url }}" class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover;">
+                                <span>{{ user.username }}</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item text-dark" href="#">Account</a></li>
+                                <li><hr class="dropdown-divider"></li>
+
+                                <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">Logout</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item d-flex align-items-center text-white me-auto dropdown"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+                        <li class="nav-item d-flex align-items-center text-white me-auto dropdown"><a class="nav-link" href="{% url 'register' %}">Register</a></li>
                     {% endif %}
-                {% endfor %}
-                {% if user.is_authenticated %}
-                    <li class="nav-item mx-2"><a class="nav-link border bg-primary border-primary rounded px-2" href="{% url 'logout' %}">Logout</a></li>
-                {% else %}
-                    <li class="nav-item mx-2"><a class="nav-link border bg-primary border-primary rounded px-2" href="{% url 'login' %}">Login</a></li>
-                    <li class="nav-item mx-2"><a class="nav-link border bg-primary border-primary rounded px-2" href="{% url 'register' %}">Register</a></li>
-                {% endif %}
-            </ul>
+                </ul>
+            </div>
         </div>
     </div>
 </nav>
