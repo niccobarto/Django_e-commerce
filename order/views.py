@@ -94,6 +94,8 @@ def confirm_order(request):
         order_item=OrderItem.objects.create(
             order=order,
             product=item.product,
+            product_name=item.product.name,
+            product_image=item.product.front_image.name,
             quantity=item.quantity,
             price=quantity_price(item.product.price,item.quantity)
         )

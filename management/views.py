@@ -13,7 +13,7 @@ from django.views.generic import ListView, TemplateView
 from django.contrib import messages
 from django.db.models.functions import Concat
 from django.db.models import Value
-from django.db.models.functions import Lower
+from store.forms import ProductForm
 from django.db.models import Q
 from django.contrib.auth.models import Group
 # Create your views here.
@@ -128,9 +128,12 @@ class ManagerOrderView(PermissionRequiredMixin, ListView):
         category_id=self.request.GET.get('category')
         country_code=self.request.GET.get('country')
         city=self.request.GET.get('city')
+        status=self.request.GET.get('status')
 
         if product_name:
             queryset=queryset.filter(items__product__name__icontains=product_name)
+        if status:
+            queryset=queryset.filter(status=status)
         if category_id:
             queryset=queryset.filter(items__product__category_id=category_id)
         if country_code:
@@ -156,7 +159,9 @@ class ManagerOrderView(PermissionRequiredMixin, ListView):
         used_codes = Order.objects.values_list('shipment_country', flat=True).distinct()
         used_countries = [(code, countries.name(code)) for code in used_codes if code]
         context['countries'] = list(used_countries)
+        context['status_choices'] = order_status_choices=Order._meta.get_field('status').choices
         return context
+
 def order_detail(request,order_id):
     order = Order.objects.get(id=order_id)
     order_status_choices=Order._meta.get_field('status').choices
@@ -197,3 +202,13 @@ class ManagerProductView(PermissionRequiredMixin, ListView):
         context=super().get_context_data(**kwargs)
         context['categories'] = Category.objects.all()
         return context
+@permission_required('store_addproduct',raise_exception=True)
+def create_product(request):
+    if request.method=="POST":
+        form=ProductForm(request.POST,request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('manage_products')
+    else:
+        form=ProductForm()
+    return render(request,'management/create_product.html',{'form':form})

@@ -19,7 +19,8 @@
                         <div class="alert alert-success p-3 mb-3">
                             <h5 class="alert-heading mb-2">Customer</h5>
                             <p class="mb-0 fw-semibold">{{ order.customer.first_name }} {{ order.customer.last_name }}</p>
-                            <small class="text-muted">Username: {{ order.customer.username }}</small>
+                            <label>Username: {{ order.customer.username }}</label><br>
+                            <label>Email: {{ order.customer.email }}</label>
                         </div>
 
                         <p class="card-text">
@@ -74,7 +75,7 @@
                                 <td>
                                     <div class="d-flex align-items-center">
                                         {% if item.product.front_image %}
-                                            <img src="{{ item.product.front_image.url }}" alt="{{ item.product.name }}"
+                                            <img src="/media/{{ item.product_image }}" alt="{{ item.product_name }}"
                                                  class="me-2 d-inline-block" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
                                         {% endif %}
                                         <span>{{ item.product.name }}</span>

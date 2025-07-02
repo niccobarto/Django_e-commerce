@@ -1,78 +1,95 @@
 {% extends 'management/manager_vision_base.html' %}
 {% block content %}
-<section class="bg-dark text-white">
-    <div class="container py-5">
-        <h2 class="mb-4 text-center">Manage Products</h2>
-
-        <form method="GET" class="mb-4">
-            <div class="d-flex justify-content-center mb-3">
-                <div class="input-group" style="max-width: 800px;">
-                    <input class="form-control" type="search" placeholder="Search..." name="name" value="{{ request.GET.name }}">
-                    <button class="btn btn-warning" type="submit">
-                        <i class="bi bi-search"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="row justify-content-center mb-3">
-                <div class="col-md-4">
-                    <select class="form-control" name="category" onchange="this.form.submit()">
-                        <option value="">-- All Categories --</option>
-                        {% for cat in categories %}
-                            <option value="{{ cat.id }}"
-                                    {% if cat.id|stringformat:"s" == request.GET.category %}
-                                    selected
-                                    {% endif %}>
-                                {{ cat.name }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-        </form>
-
-<div class="d-flex flex-wrap gap-3">
-    {% for product in products %}
-        <div class="text-dark rounded shadow-sm p-3 d-flex flex-column justify-content-between
-                                                                                            {% if product.is_active %}
-                                                                                            	bg-white
-                                                                                            {% else %}
-                                                                                            	bg-warning
-                                                                                            {% endif %}  "
-             style="width: 300px;
-                    {% if not product.is_active %}background-color: #fff3cd;{% endif %}">
-
-            <div class="d-flex">
-                <!-- Immagine -->
-                <div class="me-3">
-                    <img src="{{ product.front_image.url }}" alt="{{ product.name }}"
-                         class="img-fluid rounded"
-                         style="width: 100px; height: 100px; object-fit: cover;">
-                </div>
-
-                <div class="flex-grow-1">
-                    <h6 class="mb-1">{{ product.name }}</h6>
-                    <p class="mb-0"><small>Category:</small> {{ product.category }}</p>
-                    <p class="mb-0"><small>Quantity:</small>
-                        {% if product.quantity <= 10 %}
-                            <span class="text-danger fw-bold">{{ product.quantity }}</span>
-                        {% else %}
-                            {{ product.quantity }}
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-md-3 text-black">
+                <div class="bg-light p-3 rounded shadow-sm position-sticky align-self-start" style="top: 100px;">
+                    <div class="d-grid mb-3">
+                        <a href="{% url 'create_product' %}" class="btn btn-success w-100">
+                            <i class="bi bi-plus-circle me-1"></i> Add Product
+                        </a>
+                    </div>
+                    <form method="GET">
+                        <div class="mb-3">
+                            <label for="searchInput" class="form-label fw-bold">Search</label>
+                            <div class="input-group">
+                                <input class="form-control" type="search" placeholder="Search..." name="name" value="{{ request.GET.name }}">
+                                <button class="btn btn-warning" type="submit">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="categorySelect" class="form-label fw-bold">Category</label>
+                            <select name="category" id="categorySelect"
+                                    class="form-select" onchange="this.form.submit()">
+                                <option value="">-- All Categories --</option>
+                                {% for cat in categories %}
+                                    <option value="{{ cat.id }}"
+                                            {% if cat.id|stringformat:"s" == request.GET.category %}selected{% endif %}>
+                                        {{ cat.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% if request.GET.name %}
+                            <div class="alert alert-dark d-flex justify-content-between align-items-center">
+                                <div>
+                                    Results for: <strong>{{ request.GET.name }}</strong>
+                                </div>
+                                <a href="{% url 'manage_products' %}" class="btn btn-sm btn-outline-secondary">
+                                    Cancel search
+                                </a>
+                            </div>
                         {% endif %}
-                    </p>
-                    <p class="mb-0"><small>Price:</small> €{{ product.price }}</p>
+                        <a type="button" class="btn btn-outline-danger w-100" href="{% url 'manage_products' %}">Reset filters</a>
+                    </form>
                 </div>
             </div>
+            <div class="col-md-9">
+                <h2 class="fw-bold mb-4 mt-3 text-center">Manage Products</h2>
 
-            <div class="mt-3">
-                <a href="{% url 'product_edit' product.pk %}" class="btn btn-outline-primary w-100">Manage</a>
+                <div class="row g-3">
+                    {% for product in products %}
+                        <div class="col-12 col-sm-6 col-xl-4 d-flex">
+                            <div class="text-dark rounded shadow-sm p-3 d-flex flex-column justify-content-between w-100
+                        {% if product.is_active %} bg-white {% else %} bg-warning {% endif %}"
+                                 style="min-height: 220px;
+                                         {% if not product.is_active %}background-color: #fff3cd;{% endif %}">
+                                <div class="d-flex">
+                                    <div class="me-3">
+                                        <img src="{{ product.front_image.url }}" alt="{{ product.name }}"
+                                             class="img-fluid rounded"
+                                             style="width: 100px; height: 100px; object-fit: cover;">
+                                    </div>
+
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">{{ product.name }}</h6>
+                                        <p class="mb-0"><small>Category:</small> {{ product.category }}</p>
+                                        <p class="mb-0"><small>Quantity:</small>
+                                            {% if product.quantity <= 10 %}
+                                                <span class="text-danger fw-bold">{{ product.quantity }}</span>
+                                            {% else %}
+                                                {{ product.quantity }}
+                                            {% endif %}
+                                        </p>
+                                        <p class="mb-0"><small>Price:</small> €{{ product.price }}</p>
+                                    </div>
+                                </div>
+                                    <div class="d-flex justify-content-between mt-4">
+                                        <a href="#" class="btn btn-danger">Delete product</a>
+                                        <a href="{% url 'product_edit' product.pk %}" type="submit" class="btn btn-primary">Manage</a>
+                                    </div>
+
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="col-12">
+                            <div class="alert alert-info text-center mt-4 w-100">Nothing available with these filters</div>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
-    {% empty %}
-        <div class="alert alert-info text-center mt-4">Nothing available with these filters</div>
-    {% endfor %}
-</div>
-
-
     </div>
-</section>
 {% endblock %}

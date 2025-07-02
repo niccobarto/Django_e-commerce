@@ -1,17 +1,15 @@
-    const input = document.getElementById('front_image');
+    const input = document.getElementById('id_front_image');
     const previewBox = document.getElementById('image-preview');
-    const previewImg = document.getElementById('preview_img');
+    const previewImg = document.getElementById('preview-img');
     const cancelBtn = document.getElementById('cancel-image-btn');
 
     input.addEventListener('change', function () {
         const file = this.files[0];
         if (file) {
-            console.log("Input:", input);
             const reader = new FileReader();
             reader.onload = function (e) {
                 previewImg.src = e.target.result;
-                previewBox.style.display = 'block';
-
+                previewBox.style.display = 'flex';
             };
             reader.readAsDataURL(file);
         } else {

@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "django_countries",
     "order",
     "management",
+    "widget_tweaks",
 ]
 
 MIDDLEWARE = [
