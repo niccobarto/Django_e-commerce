@@ -31,7 +31,7 @@ def shipment_address(request):
             if address_id:
                 request.session["checkout_address_id"] = address_id
                 request.session["allow_checkout"] = True
-                return redirect("view_checkout")
+                return redirect("credit_card")
             else:
                 messages.error(request, "Please select an address.")
 
@@ -51,6 +51,18 @@ def shipment_address(request):
         "addresses": addresses
     })
 
+@login_required(login_url="login")
+def credit_card_info(request):
+    if request.method=="POST":
+        request.session["card_number"] = request.POST.get("card_number")
+        request.session["card_expiry"] = request.POST.get("card_expiry")
+        request.session["card_cv"] = request.POST.get("card_cv")
+        request.session["card_holder"] = request.POST.get("card_holder")
+        request.session["allow_checkout_payment"] = True
+        return redirect("view_checkout")
+    else:
+        return render(request, "order/credit_card.html")
+
 @login_required(login_url='login')
 def view_checkout(request):
     customer=request.user
@@ -59,12 +71,15 @@ def view_checkout(request):
         messages.error(request, "Your cart is empty.")
         return redirect("view_cart")
 
-    if not request.session.get("allow_checkout"):
-        messages.warning(request, "Accedi al checkout solo passando dal carrello.")
+    if not (request.session.get("allow_checkout") and request.session.get("allow_checkout_payment")):
+        messages.warning(request, "Access the checkout by going through the cart.")
         return redirect("view_cart")
-
-    address=UserAddress.objects.get(id=request.session['checkout_address_id'],customer=customer)
-    return render(request, 'order/checkout.html', {'address':address, 'cart_items':cart_items, 'total_price':cart_total_price(cart_items)})
+    if request.method == "POST":
+        request.session["allow_final_checkout"] = True
+        return redirect("confirm_order")
+    else:
+        address=UserAddress.objects.get(id=request.session['checkout_address_id'],customer=customer)
+        return render(request, 'order/checkout.html', {'address':address, 'cart_items':cart_items, 'total_price':cart_total_price(cart_items)})
 
 @permission_required('order.add_order',raise_exception=True)
 @login_required(login_url='login')
@@ -75,8 +90,8 @@ def confirm_order(request):
         messages.error(request, "Your cart is empty.")
         return redirect("view_cart")
 
-    if not request.session.get("allow_checkout"):
-        messages.warning(request, "Accedi al checkout solo passando dal carrello.")
+    if  not (request.session.get("allow_checkout") and request.session.get("allow_checkout_payment") and request.session.get("allow_final_checkout")):
+        messages.warning(request, "Access the checkout by going through the cart")
         return redirect("view_cart")
 
     address=UserAddress.objects.get(id=request.session['checkout_address_id'],customer=customer)
@@ -105,6 +120,8 @@ def confirm_order(request):
 
     request.session.pop("checkout_address_id", None)
     request.session.pop("allow_checkout", None)
+    request.session.pop("allow_checkout_payment", None)
+    request.session.pop("allow_final_checkout", None)
 
     return redirect('home')
 

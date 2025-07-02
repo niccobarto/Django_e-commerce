@@ -1,0 +1,35 @@
+{% extends 'store/base.html' %}
+{% block content %}
+<div class="container py-5" style="max-width: 600px;">
+    <h2 class="mb-4 text-center">Payment</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="card_number" class="form-label">Card number</label>
+            <input type="text" class="form-control" name="card_number" id="card_number" placeholder="1234 5678 9012 3456" required>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-6">
+                <label for="card_expiry" class="form-label">Expire</label>
+                <input type="text" class="form-control" name="card_expiry" id="card_expiry" placeholder="MM/YY" required>
+            </div>
+            <div class="col-6">
+                <label for="card_CVV" class="form-label">CVV</label>
+                <input type="password" class="form-control" name="card_CVV" id="card_CVV" placeholder="123" required>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="card_holder" class="form-label">Credit card owner</label>
+            <input type="text" class="form-control" name="card_holder" id="card_holder" required>
+        </div>
+
+        <div class="d-flex justify-content-between">
+                <a href="{% url 'shipment_address' %}" class="btn btn-outline-secondary">Back to shipment address</a>
+                <button type="submit" name="checkout_submit" class="btn btn-primary">Next checkout step</button>
+            </div>
+    </form>
+</div>
+{% endblock %}
