@@ -3,16 +3,17 @@ from django.contrib.auth.models import Group
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.password_validation import password_validators_help_texts
-from accounts.forms import CustomUserCreationForm
+from accounts.forms import CustomUserCreationForm,CustomUserLoginForm
+from django.contrib.auth.forms import AuthenticationForm
 
 
 # Create your views here.
 def login_user(request):
+    next_url = request.GET.get("next", "")
     if request.method=="POST": #we're asking if the form has been posted(sent!!)
-        username=request.POST["username"]
-        password=request.POST["password"]
-        user=authenticate(username=username, password=password)
-        if user is not None:
+        form=CustomUserLoginForm(request, data=request.POST)
+        if form.is_valid():
+            user=form.get_user()
             login(request,user)
             messages.success(request, "Logged in successfully")
             next_url = request.POST.get("next") or request.GET.get("next")
@@ -20,11 +21,11 @@ def login_user(request):
                 return redirect(next_url)
             return redirect("home")
         else:
-            messages.warning(request, "Login failed")
-            return redirect("login")
+            messages.warning(request, "Invalid username or password")
+            return render(request, "accounts/login.html",{"next":next_url,"form":form})
     else:
-        next_url = request.GET.get("next","")
-        return render(request, "accounts/login.html",{"next":next_url})
+        form = CustomUserLoginForm()
+        return render(request, "accounts/login.html",{"next":next_url,"form":form})
 
 
 def logout_user(request):
@@ -43,8 +44,8 @@ def register_user(request):
             login(request,user)
             return redirect("home")
         else:
-            messages.error(request, "Form invalid")
-            return redirect("register")
+            help_texts = password_validators_help_texts()
+            return render(request, "accounts/register.html", {"creation_form": form, "help_texts": help_texts})
     else:
         form=CustomUserCreationForm()
         help_texts=password_validators_help_texts()

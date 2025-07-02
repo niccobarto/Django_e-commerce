@@ -1,32 +1,28 @@
 {% extends 'store/base.html' %}
+{% load widget_tweaks %}
 {% block content %}
-<!-- Content -->
-<div class="container">
-    <div class="row justify-content-center mt-5">
-        <div class="col-md-6">
-            <h2>Login</h2>
-            <br/>
+    <div class="container d-flex justify-content-center align-items-center text-dark" style="min-height: 85vh;">
+        <div class="col-md-6 col-lg-5 bg-white p-4 rounded shadow">
+            <h3 class="text-center mb-4">Login</h3>
             <form method="POST" action="{% url 'login' %}">
                 {% csrf_token %}
                 <input type="hidden" name="next" value="{{ next }}">
-                <div class="form-group">
-                    <label for="inputUsername">Username</label>
-                    <input type="text" class="form-control" id="inputUsername" placeholder="Enter username" name="username">
-                    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+                {% for field in form %}
+                    <div class="mb-3">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="invalid-feedback d-inline-block">{{ field.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <div class="form-check mb-3">
+                    <input type="checkbox" class="form-check-input" id="rememberMe">
+                    <label class="form-check-label" for="rememberMe">Remember me</label>
                 </div>
 
-                <div class="form-group">
-                    <label for="inputPassword">Password</label>
-                    <input type="password" class="form-control" id="inputPassword" placeholder="Password" name="password">
-                </div>
-                <div class="form-group form-check">
-                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                    <label class="form-check-label" for="exampleCheck1">Check me out</label>
-                </div>
-                <br/>
-                <button type="submit" class="btn btn-primary w-100">Submit</button>
+                <button type="submit" class="btn btn-primary w-100">Login</button>
             </form>
         </div>
     </div>
-</div>
 {% endblock %}

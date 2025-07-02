@@ -1,12 +1,31 @@
 from django import forms
 from .models import UserAddress
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
 from .models import CustomUser
+
+
+class CustomUserLoginForm(AuthenticationForm):
+    class Meta:
+        model = CustomUser
+        fields=['username','password']
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class']='form-control'
+
 
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model=CustomUser
         fields=["username","first_name","last_name","email","password1","password2","phone"]
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class']='form-control'
+            if self.errors.get(field_name):
+                field.widget.attrs['class']+='form-control is-invalid'
 
 class UserAddressForm(forms.ModelForm):
     class Meta:

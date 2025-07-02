@@ -1,31 +1,32 @@
 {% extends "store/base.html" %}
+{% load widget_tweaks %}
 {% block content %}
-<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
-    <div class="col-md-6">
-        <h2 class="text mb-4">Register</h2>
-        <form method="POST">
-            {% csrf_token %}
-            {% for field in creation_form %}
-                <div class="mb-3">
-                    {{ field.label_tag }}
-                    {{ field }}
-                    {% if field.html_name == "password1" %}
-                        <br/>
-                        <div style="padding-top:10px" class="fw-bold mb-2">Password requirements:</div>
-                        <ul class="text-muted small bg-white">
-                            {% for text in help_texts %}
-                                <li>{{ text }}</li>
-                            {% endfor %}
-                        </ul>
+    <div class="container d-flex justify-content-center align-items-center text-dark" style="min-height: 85vh;">
+        <div class="col-md-8 col-lg-8 bg-white p-4 rounded shadow">
+            <h3 class="text-center mb-4">Create Account</h3>
+            <form method="POST">
+                {% csrf_token %}
+                {% for field in creation_form %}
+                    <div class="mb-3">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="invalid-feedback d-inline-block">{{ field.errors.0 }}</div>
+                        {% endif %}
+                        {% if field.html_name == 'password1' %}
+                            <div style="padding-top:10px" class="fw-bold mb-2">Password requirements:</div>
+                            <ul class="text-muted small bg-white">
+                                {% for text in help_texts %}
+                                    <li>{{ text }}</li>
+                                {% endfor %}
+                            </ul>
 
-                    {% endif %}
-                    {% if field.errors %}
-                        <div class="text-danger small">{{ field.errors }}</div>
-                    {% endif %}
-                </div>
-            {% endfor %}
-            <button type="submit" class="btn btn-primary w-100">Register</button>
-        </form>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="btn btn-primary w-100">Register</button>
+            </form>
+        </div>
     </div>
-</div>
 {% endblock %}
