@@ -9,8 +9,7 @@ Un sito di e-commerce realizzato con Django e deployment su Railway.
 - Login/Logout utenti
 - Gestione account
 - Gestione ordini e carrello
-- Upload immagini tramite [Cloudinary](https://cloudinary.com)
-- Styling con Bootstrap
+- Controllo completo del sito con la "Manager vision", la funzionalità dedicata ai manager dell'e-commerce
 - Admin integrato con gestione di prodotti, utenti, categorie e ordini
 
 
