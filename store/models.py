@@ -25,7 +25,7 @@ class Product(models.Model):
     discount=models.DecimalField(default=0,decimal_places=2,max_digits=6,blank=False,null=False)
     def __str__(self):
         return self.name
-
+    @property
     def discounted_price(self):
         if 0 < self.discount < self.price:
             return self.price - self.discount
