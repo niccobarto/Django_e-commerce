@@ -32,6 +32,17 @@
                                 {% endfor %}
                             </select>
                         </div>
+                        <div class="mb-3">
+                            <label for="activeSelect" class="form-label fw-bold">Store activity</label>
+                            <select name="active" id="activeSelect"
+                                    class="form-select" onchange="this.form.submit()">
+                                <option value="">-- All --</option>
+                                <option value="active"
+                                    {% if "active" == request.GET.active %}selected{% endif %}>Active</option>
+                                <option value="not_active"
+                                    {% if "not_active" == request.GET.active %}selected{% endif %}>Not Active</option>
+                            </select>
+                        </div>
                         {% if request.GET.name %}
                             <div class="alert alert-dark d-flex justify-content-between align-items-center">
                                 <div>
@@ -77,13 +88,13 @@
                                         {% if product.is_discounted %}
                                             <p class="mb-0"><small>Price discounted:</small><label class="fw-bold text-danger">€{{ product.discounted_price }}</label></p>
                                             <span class="badge bg-danger">{{ product.discount_percent }}% OFF</span>
-                                         {% endif %}
+                                        {% endif %}
                                     </div>
                                 </div>
-                                    <div class="d-flex justify-content-between mt-4">
-                                        <a href="{% url 'delete_product' product.pk %}" class="btn btn-danger">Delete product</a>
-                                        <a href="{% url 'product_edit' product.pk %}" type="submit" class="btn btn-primary">Manage</a>
-                                    </div>
+                                <div class="d-flex justify-content-between mt-4">
+                                    <a href="{% url 'delete_product' product.pk %}" class="btn btn-danger">Delete product</a>
+                                    <a href="{% url 'product_edit' product.pk %}" type="submit" class="btn btn-primary">Manage</a>
+                                </div>
 
                             </div>
                         </div>

@@ -178,6 +178,7 @@ def order_detail(request,order_id):
         return redirect('order_detail',order_id=order_id)
     else:
         return render(request,'management/order_detail.html',{'order':order,'status_choices':order_status_choices})
+
 class ManagerProductView(PermissionRequiredMixin, ListView):
     model = Product  # indica il modello da cui prendere i dati
     template_name = 'management/manage_products.html'  # il tuo template personalizzato
@@ -190,7 +191,12 @@ class ManagerProductView(PermissionRequiredMixin, ListView):
         queryset = Product.objects.filter()
         category_id=self.request.GET.get('category')
         name=self.request.GET.get('name')
-
+        active=self.request.GET.get('active')
+        if active:
+            if active=='active':
+                queryset=queryset.filter(is_active=True)
+            else:
+                queryset=queryset.filter(is_active=False)
         if category_id:
             queryset = queryset.filter(category_id=category_id)
         if name:
