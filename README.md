@@ -15,7 +15,7 @@ Un sito di e-commerce realizzato con Django e deployment su Railway.
 
 ## 🚀 Deploy
 
-Il progetto è deployato su [Railway](https://railway.app), un PaaS semplice per applicazioni Django.
+Il progetto è deployato su [Railway](https://railway.app)
 
 ## 🖼️ Media Storage
 
