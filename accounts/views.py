@@ -25,7 +25,7 @@ def login_user(request):
                 return redirect(next_url)
             return redirect("home")
         else:
-            messages.warning(request, "Invalid username or password")
+            messages.error(request, "Invalid username or password")
             return render(request, "accounts/login.html",{"next":next_url,"form":form})
     else:
         form = CustomUserLoginForm()
@@ -112,7 +112,7 @@ def edit_address(request,address_id):
         form = UserAddressForm(request.POST, instance=address)
         if form.is_valid():
             form.save()
-            messages.success(request, "Indirizzo aggiornato con successo.")
+            messages.success(request, "Addres updated with success")
             return redirect('manage_addresses')
     else:
         form = UserAddressForm(instance=address)

@@ -122,7 +122,7 @@ def confirm_order(request):
     request.session.pop("allow_checkout", None)
     request.session.pop("allow_checkout_payment", None)
     request.session.pop("allow_final_checkout", None)
-
+    messages.success(request, "Order confirmed")
     return redirect('home')
 
 @login_required(login_url='login')
