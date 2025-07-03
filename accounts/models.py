@@ -12,7 +12,7 @@ class CustomUser(AbstractUser):
         return self.first_name + " " + self.last_name
 
     def get_profile_image(self):
-        if self.image_profile:
+        if self.image_profile.url:
             return self.image_profile.url
         return "https://res.cloudinary.com/dcepg3wpo/image/upload/v1751549320/default_ye2vsv.png"
 
