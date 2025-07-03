@@ -1,12 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django_countries.fields import CountryField
+from cloudinary.models import CloudinaryField
 # Create your models here.
 
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True,null=False,blank=False)
     phone=models.CharField(max_length=10, null=True, blank=True)
-    image_profile=models.ImageField(upload_to="uploads/image_profile", null=True)
+    image_profile=CloudinaryField('image',folder="uploads/image_profile", null=True)
     @property
     def full_name(self):
         return self.first_name + " " + self.last_name

@@ -3,6 +3,7 @@ from django.db.models import CASCADE
 import datetime
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
+from cloudinary.models import CloudinaryField
 
 # Create your models here.
 
@@ -17,7 +18,7 @@ class Product(models.Model):
     category=models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     name=models.CharField(max_length=100)
     price=models.DecimalField(default=0,decimal_places=2,max_digits=6,blank=False,null=False)
-    front_image=models.ImageField(upload_to="uploads/product")
+    front_image=CloudinaryField('image',folder="uploads/product",null=False,blank=False)
     description=models.CharField(max_length=500, default="", blank=True, null=True)
     quantity=models.PositiveIntegerField(default=0)
     is_active=models.BooleanField(default=True)
