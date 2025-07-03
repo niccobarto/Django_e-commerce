@@ -77,8 +77,8 @@
 
             <div class="mb-3">
                 <div class="mb-3">
-                    <label for="discount" class="form-label"><strong>Discount (%)</strong></label>
-                    <input type="number" class="form-control" name="discount" id="discount" min="0" max="100" value="{{ product.discount|default_if_none:'0' }}">
+                    <label for="discount" class="form-label"><strong>Discount (€)</strong></label>
+                    <input type="number" class="form-control" name="discount" id="discount" min="0" max="100" value="{{ product.discount|default_if_none:'0' }}" required>
                 </div>
                 <div class="form-check form-switch mb-4">
                     <input class="form-check-input" type="checkbox" name="is_active" id="is_active" {% if product.is_active %}checked{% endif %}>

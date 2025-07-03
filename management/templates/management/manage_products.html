@@ -70,10 +70,14 @@
                                             {% if product.quantity <= 10 %}
                                                 <span class="text-danger fw-bold">{{ product.quantity }}</span>
                                             {% else %}
-                                                {{ product.quantity }}
+                                                <span class="text-success fw-bold">{{ product.quantity }}</span>
                                             {% endif %}
                                         </p>
-                                        <p class="mb-0"><small>Price:</small> €{{ product.price }}</p>
+                                        <p class="mb-0"><small>Price:</small><label class="fw-bold"> €{{ product.price }}</label></p>
+                                        {% if product.is_discounted %}
+                                            <p class="mb-0"><small>Price discounted:</small><label class="fw-bold text-danger">€{{ product.discounted_price }}</label></p>
+                                            <span class="badge bg-danger">{{ product.discount_percent }}% OFF</span>
+                                         {% endif %}
                                     </div>
                                 </div>
                                     <div class="d-flex justify-content-between mt-4">

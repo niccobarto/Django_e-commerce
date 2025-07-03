@@ -15,7 +15,16 @@
                             <div class="col">
                                 <strong>{{ item.product.name }}</strong><br>
                                 Quantity: <strong>{{ item.quantity }}</strong> |
-                                Price: <strong>{{ item.product.price }}€</strong>
+                                Price:
+                                {% if item.product.is_discounted %}
+                                            <div class="align-items-baseline d-inline-block gap-2 mb-2">
+                                                <label class="fw-bold text-decoration-line-through mb-0">€{{ item.product.price }}</label>
+                                                <strong class="fw-bold text-danger mb-0">€{{ item.product.discounted_price }}</strong>
+                                                <span class="badge bg-danger">{{ item.product.discount_percent }}% OFF</span>
+                                            </div>
+                                        {% else %}
+                                            <strong class="fw-bold mb-2">€{{ item.product.price }}</strong>
+                                        {% endif %}
                             </div>
                             <div class="col-12 col-md-auto mt-3 mt-md-0">
                                 <div class="btn-group w-100" role="group">

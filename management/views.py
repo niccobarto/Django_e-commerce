@@ -36,6 +36,7 @@ def manage_product(request,product_id):
         product.category_id = request.POST.get('category')
         product.is_active = request.POST.get('is_active')=="on"
         product.quantity = request.POST.get('quantity')
+        product.discount = request.POST.get('discount')
         if 'front_image' in request.FILES:
             product.front_image = request.FILES['front_image']
         product.save()

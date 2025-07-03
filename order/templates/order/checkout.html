@@ -40,7 +40,15 @@
                         </td>
                         <td>{{ item.product.name }}</td>
                         <td class="text-center">{{ item.quantity }}</td>
-                        <td class="text-end">€{{ item.product.price }}</td>
+                        <td class="text-end">
+                            {% if item.product.is_discounted %}
+                                <span class="badge bg-danger">{{ item.product.discount_percent }}% OFF</span>
+                                <label class="text-decoration-line-through">€{{ item.product.price }}</label>
+                                €{{ item.product.discounted_price }}
+                            {% else %}
+                            €{{ item.product.price }}
+                            {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>
