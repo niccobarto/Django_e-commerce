@@ -112,7 +112,7 @@ def confirm_order(request):
             product_name=item.product.name,
             product_image = item.product.front_image.url if item.product.front_image else "",
             quantity=item.quantity,
-            price=quantity_price(item.product.discounted_price(),item.quantity)
+            price=quantity_price(item.product.discounted_price,item.quantity)
         )
         item.product.quantity -=  item.quantity
         item.product.save()
