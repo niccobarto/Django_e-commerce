@@ -3,7 +3,8 @@
 Un sito di e-commerce realizzato con Django e deployment su Railway.
 
 ## 🔧 Funzionalità principali
-- Visualizzazione dei prodotti
+- Visualizzazione ed interazione dei prodotti
+- Acquisto prodotti
 - Dettagli prodotto
 - Login/Logout utenti
 - Gestione account
