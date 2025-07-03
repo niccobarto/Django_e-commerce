@@ -12,6 +12,7 @@ class CustomUser(AbstractUser):
     def full_name(self):
         return self.first_name + " " + self.last_name
 
+    @property
     def get_profile_image(self):
         if self.image_profile and hasattr(self.image_profile, 'url'):
             return self.image_profile.url

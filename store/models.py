@@ -30,8 +30,10 @@ class Product(models.Model):
         if 0 < self.discount < self.price:
             return self.price - self.discount
         return self.price
+    @property
     def is_discounted(self):
         return self.discount > 0
+    @property
     def discount_percent(self):
         if 0 < self.discount < self.price:
             percent = (self.discount / self.price) * 100
