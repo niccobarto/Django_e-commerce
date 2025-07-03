@@ -9,8 +9,10 @@
                     <li class="list-group-item">
                         <div class="row align-items-center">
                             <div class="col-auto">
+                                {% if item.product.front_image %}
                                 <img src="{{ item.product.front_image.url }}" alt="{{ item.product.name }}"
                                      class="img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;">
+                                {% endif %}
                             </div>
                             <div class="col">
                                 <strong>{{ item.product.name }}</strong><br>
