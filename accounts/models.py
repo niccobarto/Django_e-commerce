@@ -14,7 +14,7 @@ class CustomUser(AbstractUser):
     def get_profile_image(self):
         if self.image_profile:
             return self.image_profile.url
-        return "https://res.cloudinary.com/dcepg3wpo/image/upload/v.../uploads/image_profile/default.png"
+        return "https://res.cloudinary.com/dcepg3wpo/image/upload/v1751549320/default_ye2vsv.png"
 
 class UserAddress(models.Model):
     customer=models.ForeignKey(CustomUser, on_delete=models.CASCADE)
