@@ -1,10 +1,13 @@
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render,redirect
 from django.contrib.auth.models import Group
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.password_validation import password_validators_help_texts
-from accounts.forms import CustomUserCreationForm,CustomUserLoginForm,CustomUserChangeForm
+from accounts.forms import CustomUserCreationForm, CustomUserLoginForm, CustomUserChangeForm, UserAddressForm
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
+from .models import UserAddress
 from django.contrib.auth.forms import AuthenticationForm
 
 
@@ -53,13 +56,78 @@ def register_user(request):
         return render(request,"accounts/register.html",{"creation_form":form,"help_texts":help_texts})
 
 @login_required(login_url="login")
+def view_account(request):
+    return render(request,'accounts/view_account.html')
+
+@permission_required('accounts.change_customuser',raise_exception=True)
+@login_required(login_url='login')
+def change_password(request):
+    if request.method=="POST":
+        form=PasswordChangeForm(request.user,request.POST)
+        if form.is_valid():
+            user=form.save()
+            update_session_auth_hash(request, user)
+            return redirect('view_account')
+        else:
+            messages.error(request,"Errors on the password change")
+    else:
+        form=PasswordChangeForm(request.user)
+    return render(request,'accounts/change_password.html',{'form':form})
+
+@permission_required('accounts.view_useraddress', raise_exception=True)
+@permission_required('accounts.add_useraddress', raise_exception=True)
+@permission_required('accounts.change_customuser',raise_exception=True)
+@login_required(login_url='login')
+def manage_addresses(request):
+    customer=request.user
+    address_form=UserAddressForm()
+    addresses=UserAddress.objects.filter(customer=customer)
+    if request.method=="POST":
+        action = request.POST.get('action')
+        delete_address=request.POST.get('delete_address_id')
+        if action=="delete":
+            if delete_address:
+                UserAddress.objects.filter(id=delete_address).delete()
+                messages.success(request,"Address deleted")
+            return redirect('manage_addresses')
+        if action=="add":
+            address_form = UserAddressForm(request.POST)
+            if address_form.is_valid():
+                new_address = address_form.save(commit=False)
+                new_address.customer = customer
+                new_address.save()
+                messages.success(request, "Address added successfully.")
+                return redirect("manage_addresses")
+            else:
+                messages.error(request, "Please correct the errors below.")
+    return render(request, "accounts/manage_addresses.html", {
+        "add_address_form": address_form,
+        "addresses": addresses
+    })
+
+def edit_address(request,address_id):
+    address=UserAddress.objects.get(id=address_id)
+    user=request.user
+    if request.method == 'POST':
+        form = UserAddressForm(request.POST, instance=address)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Indirizzo aggiornato con successo.")
+            return redirect('manage_addresses')
+    else:
+        form = UserAddressForm(instance=address)
+
+    return render(request, 'accounts/edit_address.html', {'form': form})
+
+@permission_required('accounts.change_customuser',raise_exception=True)
+@login_required(login_url="login")
 def edit_account(request):
     user = request.user
     if request.method == 'POST':
         form = CustomUserChangeForm(request.POST, request.FILES, instance=user)
         if form.is_valid():
             form.save()
-            return redirect('home')
+            return redirect('view_account')
     else:
         form = CustomUserChangeForm(instance=user)
 

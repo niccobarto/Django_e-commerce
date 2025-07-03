@@ -44,9 +44,14 @@
                     <div class="form-check card p-3">
                         <input class="form-check-input" type="radio" name="address_id" id="address{{ address.id }}"
                                value="{{ address.id }}" required>
-                        <label class="form-check-label" for="address{{ address.id }}">
-                            {{ address.str }}
-                        </label>
+                        <div class="form-check-label">
+                            <div>
+                                    <p class="mb-1"><strong>Receiver: </strong><label class="fw-bold">{{ address.full_name }}</label></p>
+                                    <p class="mb-1"><strong>Address street: </strong>{{ address.street_address }}</p>
+                                    <p class="mb-1"><strong>Postal code - City: </strong>{{ address.postal_code }} {{ address.city }}</p>
+                                    <p class="mb-0"><strong>Country: </strong>{{ address.country.name }}</p>
+                                </div>
+                        </div>
                     </div>
                 {% endfor %}
             </div>
