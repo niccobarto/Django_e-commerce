@@ -163,6 +163,8 @@ class ManagerOrderView(PermissionRequiredMixin, ListView):
         context['status_choices'] = order_status_choices=Order._meta.get_field('status').choices
         return context
 
+@permission_required("order_vieworder")
+@permission_required("order_changeorder")
 def order_detail(request,order_id):
     order = Order.objects.get(id=order_id)
     order_status_choices=Order._meta.get_field('status').choices
