@@ -78,6 +78,8 @@ DATABASES = {
         default=config('DATABASE_URL')
     )
 }
+import sys
+print("DATABASES:", DATABASES, file=sys.stderr)
 AUTH_USER_MODEL = 'accounts.CustomUser'
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
