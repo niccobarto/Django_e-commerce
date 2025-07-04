@@ -74,12 +74,25 @@ WSGI_APPLICATION = "djangoEcommerce.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default='postgresql://postgres:Anotherunifithing@localhost:5432/ecommerce_db',
-        conn_max_age=600
-    )
-}
+
+if DEBUG:
+    # In locale usa PostgreSQL locale (oppure SQLite se vuoi)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'ecommerce_db',
+            'USER': 'postgres',
+            'PASSWORD': 'Anotherunifithing',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
+else:
+    # In produzione usa DATABASE_URL
+    DATABASE_URL = config('DATABASE_URL')
+    DATABASES = {
+        'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
+    }
 AUTH_USER_MODEL = 'accounts.CustomUser'
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
