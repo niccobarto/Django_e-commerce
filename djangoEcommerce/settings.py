@@ -2,11 +2,12 @@ from pathlib import Path
 import os
 import dj_database_url
 from decouple import config
+from decouple import Config, RepositoryEnv
 import django
 from django.contrib.auth import get_user_model
+import cloudinary
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -72,9 +73,11 @@ WSGI_APPLICATION = "djangoEcommerce.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+
 DATABASES = {
     'default': dj_database_url.config(
-        default=config('DATABASE_URL')
+        default='postgresql://postgres:Anotherunifithing@localhost:5432/ecommerce_db',
+        conn_max_age=600
     )
 }
 
@@ -112,13 +115,26 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  # cartella sorgente
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # cartella di output per collectstatic
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+if not DEBUG:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Media files (immagini caricate dagli utenti) - ora su Cloudinary
+cloudinary_url = os.getenv('CLOUDINARY_URL', None)
+
+if cloudinary_url:
+    cloudinary.config(cloudinary_url=cloudinary_url)
+else:
+    # In locale usa le variabili separate
+    cloudinary.config(
+        cloud_name=config('CLOUDINARY_CLOUD_NAME', default=''),
+        api_key=config('CLOUDINARY_API_KEY', default=''),
+        api_secret=config('CLOUDINARY_API_SECRET', default='')
+    )
+
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
