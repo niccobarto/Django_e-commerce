@@ -24,9 +24,9 @@ from django.contrib.auth.models import Group
 def manager_vision(request):
     return render(request, 'management/manager_vision.html')
 
-@permission_required('store_addproduct', raise_exception=True)
-@permission_required('store_changeproduct', raise_exception=True)
-@permission_required('store_deleteproduct', raise_exception=True)
+@permission_required('store.add_product', raise_exception=True)
+@permission_required('store.change_product', raise_exception=True)
+@permission_required('store.delete_product', raise_exception=True)
 def manage_product(request,product_id):
     product=Product.objects.get(id=product_id)
     if request.method=="POST":
@@ -45,9 +45,9 @@ def manage_product(request,product_id):
         categories= Category.objects.all()
         return render(request,"management/product_edit.html",{'product':product,'categories':categories})
 
-@permission_required('store_changecategory', raise_exception=True)
-@permission_required('store_addcategory', raise_exception=True)
-@permission_required('store_deletecategory', raise_exception=True)
+@permission_required('store.change_category', raise_exception=True)
+@permission_required('store.add_category', raise_exception=True)
+@permission_required('store.delete_category', raise_exception=True)
 def m_categories_list(request):
     if request.method=="POST":
         action=request.POST.get('action')
@@ -77,8 +77,8 @@ def m_categories_list(request):
         categories = Category.objects.all()
         return render(request,'management/manage_categories.html',{'categories':categories})
 
-@permission_required('accounts_viewcustomuser', raise_exception=True)
-@permission_required('accounts_changecustomuser', raise_exception=True)
+@permission_required('accounts.view_customuser', raise_exception=True)
+@permission_required('accounts.change_customuser', raise_exception=True)
 @user_passes_test(is_manager)
 def m_users(request):
     if request.method=="POST":
@@ -118,9 +118,9 @@ class ManagerOrderView(PermissionRequiredMixin, ListView):
     model=Order
     template_name='management/manage_orders.html'
     context_object_name='orders'
-    permission_required=['order_vieworder',
-                         'order_vieworderitem',
-                         'order_changeorder']
+    permission_required=['order.view_order',
+                         'order.view_orderitem',
+                         'order.change_order']
 
     def get_queryset(self):
         queryset = Order.objects.all()
@@ -163,8 +163,8 @@ class ManagerOrderView(PermissionRequiredMixin, ListView):
         context['status_choices'] = order_status_choices=Order._meta.get_field('status').choices
         return context
 
-@permission_required("order_vieworder")
-@permission_required("order_changeorder")
+@permission_required("order.view_order")
+@permission_required("order.change_order")
 def order_detail(request,order_id):
     order = Order.objects.get(id=order_id)
     order_status_choices=Order._meta.get_field('status').choices
@@ -185,9 +185,9 @@ class ManagerProductView(PermissionRequiredMixin, ListView):
     model = Product  # indica il modello da cui prendere i dati
     template_name = 'management/manage_products.html'  # il tuo template personalizzato
     context_object_name = 'products'
-    permission_required = ['store_addproduct',
-                           'store_changeproduct',
-                           'store_deleteproduct']
+    permission_required = ['store.add_product',
+                           'store.change_product',
+                           'store.delete_product']
 
     def get_queryset(self):
         queryset = Product.objects.filter()
@@ -211,7 +211,7 @@ class ManagerProductView(PermissionRequiredMixin, ListView):
         context=super().get_context_data(**kwargs)
         context['categories'] = Category.objects.all()
         return context
-@permission_required('store_addproduct',raise_exception=True)
+@permission_required('store.add_product',raise_exception=True)
 def create_product(request):
     if request.method=="POST":
         form=ProductForm(request.POST,request.FILES)
@@ -222,7 +222,7 @@ def create_product(request):
         form=ProductForm()
     return render(request,'management/create_product.html',{'form':form})
 
-@permission_required("store_deleteproduct",raise_exception=True)
+@permission_required("store.delete_product",raise_exception=True)
 def delete_product(request,product_id):
     product = Product.objects.get(id=product_id)
     order_count = OrderItem.objects.filter(product=product).count()
