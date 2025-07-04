@@ -186,7 +186,6 @@ class ManagerProductView(PermissionRequiredMixin, ListView):
     template_name = 'management/manage_products.html'  # il tuo template personalizzato
     context_object_name = 'products'
     permission_required = ['store.add_product',
-                           'store.change_product',
                            'store.delete_product']
 
     def get_queryset(self):
