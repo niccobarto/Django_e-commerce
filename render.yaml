@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: django-ecommerce
+    env: python
+    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput"
+    startCommand: "gunicorn djangoEcommerce.wsgi:application --bind 0.0.0.0:$PORT"
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: djangoEcommerce.settings
+      - key: PYTHON_VERSION
+        value: 3.11
+    autoDeploy: true
