@@ -4,20 +4,23 @@ import dj_database_url
 from decouple import config
 import django
 from django.contrib.auth import get_user_model
-import cloudinary
-
-# Percorso base progetto
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Chiave segreta (mai hardcodare in prod, qui solo per esempio)
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-placeholder')
 
-# DEBUG da variabile ambiente
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = "django-insecure-k3no!#a0u!-!=^@(sk!+dw9nb1v#rth56f*vvp17ggmdj)rc&7"
+
+# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
-
 ALLOWED_HOSTS = ['*']
 
-# App installate
+
+# Application definition
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -38,7 +41,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # serve static in prod
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -52,7 +55,7 @@ ROOT_URLCONF = "djangoEcommerce.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],  # puoi aggiungere cartelle personalizzate
+        "DIRS": [],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -66,17 +69,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "djangoEcommerce.wsgi.application"
 
-# DATABASES con fallback per locale e produzione
-DATABASE_URL = config('DATABASE_URL', default='postgresql://postgres:Anotherunifithing@localhost:5432/ecommerce_db')
 
+# Database
+# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 DATABASES = {
-    'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL')
+    )
 }
 
-# User model custom
 AUTH_USER_MODEL = 'accounts.CustomUser'
+# Password validation
+# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
-# Password validation (puoi adattare)
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -92,39 +97,33 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internazionalizzazione
+
+# Internationalization
+# https://docs.djangoproject.com/en/5.2/topics/i18n/
+
 LANGUAGE_CODE = "en-us"
+
 TIME_ZONE = "UTC"
+
 USE_I18N = True
+
 USE_TZ = True
 
-# Static files
+
+# Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  # cartella sorgente
 
-if not DEBUG:
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # cartella di output per collectstatic
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Cloudinary configurazione
-cloudinary_url = config('CLOUDINARY_URL', default=None)
-
-if cloudinary_url:
-    cloudinary.config(cloudinary_url=cloudinary_url)
-else:
-    cloudinary.config(
-        cloud_name=config('CLOUDINARY_CLOUD_NAME', default=''),
-        api_key=config('CLOUDINARY_API_KEY', default=''),
-        api_secret=config('CLOUDINARY_API_SECRET', default='')
-    )
-
+# Media files (immagini caricate dagli utenti) - ora su Cloudinary
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Creazione superuser automatico (solo in deploy)
-if config('RENDER_SUPERUSER', default='false').lower() == 'true':
+if os.environ.get('RENDER_SUPERUSER', '') == 'true':
     django.setup()
     User = get_user_model()
     if not User.objects.filter(username='admin').exists():
