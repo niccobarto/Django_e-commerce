@@ -8,11 +8,16 @@ from django.contrib.auth import get_user_model
 
 # Base directory del progetto
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+ON_RENDER = os.environ.get('RENDER', False) == 'true'
 # Sicurezza
 SECRET_KEY = config('SECRET_KEY', default='unsafe-key')
 DEBUG = config('DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*').split(',')
+ALLOWED_HOSTS = config(
+    'ALLOWED_HOSTS',
+    default='localhost,127.0.0.1' if not ON_RENDER else 'django-e-commerce-gbcg.onrender.com'
+).split(',')
+if ON_RENDER:
+    CSRF_TRUSTED_ORIGINS = ['https://' + host for host in ALLOWED_HOSTS]
 
 # App Django + app custom
 INSTALLED_APPS = [
@@ -69,7 +74,8 @@ TEMPLATES = [
 WSGI_APPLICATION = "djangoEcommerce.wsgi.application"
 
 # Database (PostgreSQL su Render, fallback SQLite in locale)
-DATABASE_URL = config('DATABASE_URL', default='sqlite:///' + str(BASE_DIR / 'db.sqlite3'))
+DATABASE_URL = config('DATABASE_URL')
+
 DATABASES = {
     'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
 }
