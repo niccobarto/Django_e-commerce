@@ -1,6 +1,10 @@
 # Django ecommerce
 
-Un sito di e-commerce realizzato con Django e deployment su Railway.
+Un sito di e-commerce realizzato con Django e deployment su Render.
+
+Credenziali per l'accesso a manager del sito
+username: professore
+password: ecommerce2025
 
 ## 🔧 Funzionalità principali
 - Visualizzazione ed interazione dei prodotti
@@ -15,7 +19,7 @@ Un sito di e-commerce realizzato con Django e deployment su Railway.
 
 ## 🚀 Deploy
 
-Il progetto è deployato su [Railway](https://railway.app)
+Il progetto è deployato su [Render]([https://railway.app](https://render.com/))
 
 ## 🖼️ Media Storage
 
