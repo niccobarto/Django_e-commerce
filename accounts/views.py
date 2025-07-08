@@ -25,7 +25,7 @@ def login_user(request):
                 return redirect(next_url)
             return redirect("home")
         else:
-            messages.error(request, "Invalid username or password")
+            messages.warning(request, "Invalid username or password")
             return render(request, "accounts/login.html",{"next":next_url,"form":form})
     else:
         form = CustomUserLoginForm()
