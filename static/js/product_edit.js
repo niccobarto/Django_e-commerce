@@ -1,27 +1,20 @@
-    const input = document.getElementById('front_image');
-    const previewBox = document.getElementById('image-preview');
-    const previewImg = document.getElementById('preview_img');
-    const cancelBtn = document.getElementById('cancel-image-btn');
+    const input = document.getElementById("id_front_image");
+    const preview = document.getElementById("image-preview");
+    const previewImg = document.getElementById("preview_img");
+    const cancelBtn = document.getElementById("cancel-image-btn");
 
-    input.addEventListener('change', function () {
-        const file = this.files[0];
-        if (file) {
-            console.log("Input:", input);
+    input.addEventListener("change", function () {
+        if (input.files && input.files[0]) {
             const reader = new FileReader();
             reader.onload = function (e) {
                 previewImg.src = e.target.result;
-                previewBox.style.display = 'block';
-
+                preview.style.display = "block";
             };
-            reader.readAsDataURL(file);
-        } else {
-            previewBox.style.display = 'none';
-            previewImg.src = '';
+            reader.readAsDataURL(input.files[0]);
         }
     });
 
-    cancelBtn.addEventListener('click', function () {
-        input.value = '';                 // reset file input
-        previewImg.src = '';              // nasconde immagine
-        previewBox.style.display = 'none';
+    cancelBtn.addEventListener("click", function () {
+        input.value = "";  // Clear the file input
+        preview.style.display = "none";
     });

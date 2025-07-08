@@ -10,6 +10,7 @@ from .models import Order,OrderItem
 from cart.models import CartItem
 from cart.utils import cart_total_price,quantity_price
 from django.contrib.auth.decorators import permission_required
+from store.utils import check_product_availability
 
 # Create your views here.
 
@@ -94,6 +95,9 @@ def confirm_order(request):
         messages.warning(request, "Access the checkout by going through the cart")
         return redirect("view_cart")
 
+    for item in cart_items:
+        if not check_product_availability(item.product.pk,item.quantity):
+            redirect('view_cart')
     address=UserAddress.objects.get(id=request.session['checkout_address_id'],customer=customer)
     order= Order.objects.create(
         customer=customer,

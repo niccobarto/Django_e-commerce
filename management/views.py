@@ -1,6 +1,6 @@
 from logging import raiseExceptions
 from django.contrib.auth.models import User
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import permission_required, login_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.decorators import user_passes_test
@@ -27,24 +27,24 @@ def manager_vision(request):
 @permission_required('store.add_product', raise_exception=True)
 @permission_required('store.change_product', raise_exception=True)
 @permission_required('store.delete_product', raise_exception=True)
-def manage_product(request,product_id):
-    product=Product.objects.get(id=product_id)
-    if request.method=="POST":
-        product.name = request.POST.get('name')
-        product.description = request.POST.get('description')
-        product.price = request.POST.get('price')
-        product.category_id = request.POST.get('category')
-        product.is_active = request.POST.get('is_active')=="on"
-        product.quantity = request.POST.get('quantity')
-        product.discount = request.POST.get('discount')
-        if 'front_image' in request.FILES:
-            product.front_image = request.FILES['front_image']
-        product.save()
-        return redirect('manage_products')
-    else:
-        categories= Category.objects.all()
-        return render(request,"management/product_edit.html",{'product':product,'categories':categories})
+def manage_product(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
 
+    if request.method == "POST":
+        form = ProductForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            form.save()
+            return redirect('manage_products')
+        else:
+            messages.error(request, "Errore nella validazione del form. Controlla i campi.")
+    else:
+        form = ProductForm(instance=product)
+    categories = Category.objects.all()  # Se usi ancora la lista nel template
+    return render(request, "management/product_edit.html", {
+        'form': form,
+        'product': product,
+        'categories': categories
+    })
 @permission_required('store.change_category', raise_exception=True)
 @permission_required('store.add_category', raise_exception=True)
 @permission_required('store.delete_category', raise_exception=True)

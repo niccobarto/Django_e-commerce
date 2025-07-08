@@ -1,98 +1,108 @@
 {% extends 'management/manager_vision_base.html' %}
 {% load static %}
+{% load widget_tweaks %}
+
 {% block content %}
-    <div class="container py-4" style="max-width: 900px;width: 100%">
-        <h2 class="mb-4">Edit Product</h2>
+<div class="container py-4" style="max-width: 900px; width: 100%;">
+    <h2 class="mb-4">Edit Product</h2>
 
-        <form method="POST" enctype="multipart/form-data" class="text-dark bg-white p-4 rounded shadow-sm">
-            {% csrf_token %}
-            <div class="mb-3">
-                <label for="name" class="form-label"><strong>Product name</strong></label>
-                <input type="text" class="form-control" name="name" id="name" value="{{ product.name }}" required>
+    <form method="POST" enctype="multipart/form-data" class="bg-white text-dark p-4 rounded shadow-sm">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {{ form.non_field_errors }}
             </div>
-            <div class="mb-3">
-                <label for="front_image" class="form-label"><strong>Image</strong></label>
-                <div class="d-flex flex-wrap gap-4 mb-2">
+        {% endif %}
 
-                    {% if product.front_image %}
-                        <div
-                                class="position-relative justify-content-start">
-                            <p class="mb-1">Current image:</p>
-                            <div class="d-inline-block">
-                                <img class="img-thumbnail rounded p-0"
-                                     style="max-width: 150px; height: auto;"
-                                     alt="Preview image"
-                                     src="{{ product.front_image.url }}">
-                            </div>
-                        </div>
-                    {% endif %}
-                    <div id="image-preview"
-                         class="position-relative justify-content-start"
-                         style="display: none;">
-                        <p class="mb-1">New selected image:</p>
-                        <div class="position-relative d-inline-block">
-                            <button type="button"
-                                    id="cancel-image-btn"
-                                    aria-label="Cancel"
-                                    class="btn btn-sm btn-danger position-absolute"
-                                    style="z-index: 2; padding: 0.25rem 0.5rem; transform:translate(60%,-20%); right:0 ">
-                                &times;
-                            </button>
-                            <img id="preview_img"
-                                 class="img-thumbnail rounded p-0"
+        <div class="mb-3">
+            {{ form.name.label_tag }}
+            {{ form.name|add_class:"form-control" }}
+            {{ form.name.errors }}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label"><strong>Image</strong></label>
+            <div class="d-flex flex-wrap gap-4 mb-2">
+                {% if product.front_image %}
+                    <div class="position-relative justify-content-start">
+                        <p class="mb-1">Current image:</p>
+                        <div class="d-inline-block">
+                            <img class="img-thumbnail rounded p-0"
                                  style="max-width: 150px; height: auto;"
-                                 alt="Preview image">
+                                 alt="Current image"
+                                 src="{{ product.front_image.url }}">
                         </div>
                     </div>
-                    <input type="file" class="form-control" name="front_image" id="front_image" accept="image/*">
-                </div>
+                {% endif %}
 
-            </div>
-            <div class="mb-3">
-                <label for="description" class="form-label"><strong>Description</strong></label>
-                <textarea class="form-control" name="description" id="description" rows="4">{{ product.description|default:"" }}
-                </textarea>
-            </div>
-
-            <div class="mb-3">
-                <label for="price" class="form-label"><strong>Price (€)</strong></label>
-                <input type="number" class="form-control" name="price" id="price" step="0.01" min="0" value="{{ product.price }}" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="quantity" class="form-label"><strong>Quantity</strong></label>
-                <input type="number" class="form-control" name="quantity" id="quantity" step="1" min="0" value="{{ product.quantity }}" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="category" class="form-label"><strong>Category</strong></label>
-                <select class="form-select" name="category" id="category" required>
-                    {% for category in categories %}
-                        <option value="{{ category.id }}" {% if category.id == product.category.id %}selected{% endif %}>
-                            {{ category.name }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <div class="mb-3">
-                    <label for="discount" class="form-label"><strong>Discount (€)</strong></label>
-                    <input type="number" class="form-control" name="discount" id="discount" min="0" max="100" value="{{ product.discount|default_if_none:'0' }}" required>
-                </div>
-                <div class="form-check form-switch mb-4">
-                    <input class="form-check-input" type="checkbox" name="is_active" id="is_active" {% if product.is_active %}checked{% endif %}>
-                    <label class="form-check-label" for="is_active"><strong>Visible in store</strong></label>
-                </div>
-                <div class="d-flex justify-content-between mt-4">
-                    <a href="{% url 'manage_products' %}" class="btn btn-outline-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-success">Save Changes</button>
+                <div id="image-preview" class="position-relative justify-content-start" style="display: none;">
+                    <p class="mb-1">New selected image:</p>
+                    <div class="position-relative d-inline-block">
+                        <button type="button"
+                                id="cancel-image-btn"
+                                aria-label="Cancel"
+                                class="btn btn-sm btn-danger position-absolute"
+                                style="z-index: 2; padding: 0.25rem 0.5rem; transform:translate(60%,-20%); right:0 ">
+                            &times;
+                        </button>
+                        <img id="preview_img"
+                             class="img-thumbnail rounded p-0"
+                             style="max-width: 150px; height: auto;"
+                             alt="Preview image">
+                    </div>
                 </div>
             </div>
-        </form>
+
+            {{ form.front_image|add_class:"form-control" }}
+            {{ form.front_image.errors }}
+        </div>
+
+        <div class="mb-3">
+            {{ form.description.label_tag }}
+            {{ form.description|add_class:"form-control" }}
+            {{ form.description.errors }}
+        </div>
+
+        <div class="mb-3">
+            {{ form.price.label_tag }}
+            {{ form.price|add_class:"form-control" }}
+            {{ form.price.errors }}
+        </div>
+
+        <div class="mb-3">
+            {{ form.quantity.label_tag }}
+            {{ form.quantity|add_class:"form-control" }}
+            {{ form.quantity.errors }}
+        </div>
+
+        <div class="mb-3">
+            {{ form.discount.label_tag }}
+            {{ form.discount|add_class:"form-control" }}
+            {{ form.discount.errors }}
+        </div>
+
+        <div class="mb-3">
+            {{ form.category.label_tag }}
+            {{ form.category|add_class:"form-select" }}
+            {{ form.category.errors }}
+        </div>
+
+        <div class="form-check form-switch mb-4">
+            {{ form.is_active|add_class:"form-check-input" }}
+            {{ form.is_active.label_tag }}
+            {{ form.is_active.errors }}
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+            <a href="{% url 'manage_products' %}" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-success">Save Changes</button>
+        </div>
+    </form>
+
+    <div class="d-flex justify-content-center p-2 mt-3">
+        <a href="{% url 'delete_product' product.pk %}" class="btn btn-danger w-100" style="max-width: 700px">Delete Product</a>
     </div>
-    <div class="d-flex justify-content-center p-2">
-        <a href="{% url 'delete_product' product.pk %}" class="btn btn-danger w-100" style="max-width: 700px">Delete item</a>
-    </div>
-    <script src="{% static 'js/product_edit.js' %}"></script>
+</div>
+<script src="{% static 'js/product_edit.js' %}"></script>
 {% endblock %}

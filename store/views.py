@@ -1,10 +1,10 @@
-from typing import final
-
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .models import Product, Category
 from django.views.generic import ListView
 from django.db.models import F, ExpressionWrapper, DecimalField
+from decimal import Decimal, InvalidOperation
+from django.shortcuts import get_object_or_404
 # Create your views here.
 
 class HomeView(ListView):
@@ -26,11 +26,17 @@ class HomeView(ListView):
         name=self.request.GET.get('name')
 
         if category_id:
-            queryset = queryset.filter(category_id=category_id)
+            queryset = queryset.filter(category_id=int(category_id))
         if min_price:
-            queryset = queryset.filter(final_price__gte=min_price)
+            try:
+                queryset = queryset.filter(final_price__gte=Decimal(min_price))
+            except InvalidOperation:
+                pass
         if max_price:
-            queryset = queryset.filter(final_price__lte=max_price)
+            try:
+                queryset = queryset.filter(final_price__lte=Decimal(max_price))
+            except InvalidOperation:
+                pass
         if name:
             queryset = queryset.filter(name__icontains=name)
         return queryset
@@ -43,5 +49,5 @@ class HomeView(ListView):
         return context
 
 def product_detail(request,product_id):
-    product=Product.objects.get(pk=product_id)
+    product=get_object_or_404(Product,pk=product_id)
     return render(request, 'store/product_detail.html', {"product":product})
