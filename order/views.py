@@ -118,8 +118,7 @@ def confirm_order(request):
             quantity=item.quantity,
             price=quantity_price(item.product.discounted_price,item.quantity)
         )
-        item.product.quantity -=  item.quantity
-        item.product.save()
+        item.product.decrease_quantity(item.quantity)
     cart_items.delete()
 
     request.session.pop("checkout_address_id", None)

@@ -24,6 +24,7 @@ class HomeView(ListView):
         min_price=self.request.GET.get('min_price')
         max_price=self.request.GET.get('max_price')
         name=self.request.GET.get('name')
+        queryset = queryset.filter(quantity__gt=0)
 
         if category_id:
             queryset = queryset.filter(category_id=int(category_id))

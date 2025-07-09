@@ -39,3 +39,13 @@ class Product(models.Model):
             percent = (self.discount / self.price) * 100
             return round(percent)
         return 0
+
+    def increase_quantity(self,amount):
+        self.quantity += amount
+
+    def decrease_quantity(self,amount=1):
+        if self.quantity >= amount:
+            self.quantity -= amount
+            if self.quantity == 0:
+                self.is_active = False
+            self.save()

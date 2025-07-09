@@ -36,7 +36,7 @@ def manage_product(request, product_id):
             form.save()
             return redirect('manage_products')
         else:
-            messages.error(request, "Errore nella validazione del form. Controlla i campi.")
+            messages.error(request, "Error on form validation")
     else:
         form = ProductForm(instance=product)
     categories = Category.objects.all()  # Se usi ancora la lista nel template
