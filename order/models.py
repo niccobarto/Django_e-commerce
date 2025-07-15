@@ -52,6 +52,6 @@ class OrderItem(models.Model):
     price = models.DecimalField(max_digits=8, decimal_places=2)
 
     def __str__(self):
-        return f"{self.product.name} - {self.quantity} - {self.order.customer.username}"
+        return f"{self.product_name} - {self.quantity} - {self.order.customer.username}"
     def subtotal(self):
         return self.price * self.quantity
